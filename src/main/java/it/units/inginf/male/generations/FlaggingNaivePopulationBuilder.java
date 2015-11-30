@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.generations;
 
+import com.gs.collections.impl.list.mutable.FastList;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.inputs.DataSet;
@@ -37,7 +38,7 @@ import java.util.*;
  */
 public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder {
 
-    private List<Node> population = new LinkedList<>();
+    private List<Node> population = new FastList();
     private final boolean useDottification;
     private final boolean useWordClasses;
 
@@ -64,9 +65,10 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         this.useWordClasses = useWordClasses;
     }
 
+
     @Override
-    public List<Node> init() {
-        return new ArrayList<>(population);
+    public void init(List<Node> target) {
+        target.addAll(population);
     }
 
     @Override

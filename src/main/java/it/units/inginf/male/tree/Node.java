@@ -40,6 +40,12 @@ public abstract class Node {
     public abstract List<Node> children();
     public abstract long getId();
 
+    public final String describe() {
+        StringBuilder sb = new StringBuilder();
+        describe(sb);
+        return sb.toString();
+    }
+
     public abstract void describe(StringBuilder builder);
     public abstract void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour);
     public abstract boolean isValid();

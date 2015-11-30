@@ -20,7 +20,8 @@ package it.units.inginf.male.selections;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.tree.Node;
-import java.util.List;
+
+import java.util.Collection;
 
 /**
  *
@@ -35,21 +36,18 @@ public class Tournament implements Selection {
     }
 
     @Override
-    public Node select(List<Ranking> population) {
+    public Node select(Collection<Ranking> _population) {
 
-        return tournament(population);
+        int size = _population.size();
+        Ranking[] population = _population.toArray(new Ranking[size]);
 
-    }
-
-    private Node tournament(List<Ranking> population) {
-
-        int best = population.size();        
+        int best = size;
         for (int t = 0; t < 7; t++) {
-            int index = context.getRandom().nextInt(population.size());
+            int index = context.getRandom().nextInt(size);
             best = Math.min(best, index);
         }
 
-        return population.get(best).getTree();
+        return population[best].getNode();
 
     }
 }

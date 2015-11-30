@@ -17,6 +17,8 @@
  */
 package it.units.inginf.male.generations;
 
+import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.map.mutable.UnifiedMap;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.inputs.DataSet;
@@ -43,8 +45,8 @@ import java.util.*;
  */
 public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
-    private List<Node> population = new LinkedList<>();
-    private Map<String,Double> winnerTokens = new HashMap<>();
+    private List<Node> population = new FastList();
+    private Map<String,Double> winnerTokens = new UnifiedMap();
     
     private Tokenizer tokenizer = new BasicTokenizer();
      
@@ -56,8 +58,8 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
     }
 
     @Override
-    public List<Node> init() {
-        return new ArrayList<>(population);
+    public void init(List<Node> target) {
+        target.addAll(population);
     }
 
  //It is true when string matches \w (.i.e. its length is one and it is alphabetic or decimal number)

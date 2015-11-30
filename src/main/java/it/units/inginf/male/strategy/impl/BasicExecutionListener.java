@@ -93,7 +93,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
 
     
     @Override
-    public void logGeneration(RunStrategy strategy, int generation, Node best, double[] fitness, List<Ranking> population) {
+    public void logGeneration(RunStrategy strategy, int generation, Node best, double[] fitness, Collection<Ranking> population) {
         int jobId = strategy.getConfiguration().getJobId();
       
         this.status.overallGenerationsDone++;
@@ -106,7 +106,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
                 TimeUnit.MILLISECONDS.toMinutes(elapsedMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(elapsedMillis)),
                 TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis)));
         //let's store the current generatin best(fitness) individual performances on validation. remind performances indexes != fintesses 
-        Ranking bestRanking = new Ranking(-1, best, fitness);
+        Ranking bestRanking = new Ranking(best, fitness);
         FinalSolution generationBestSolution = new FinalSolution(bestRanking);
       
         //The learning performance is needed by the checkBestCandidate, commented out from production code
@@ -127,7 +127,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
     }
 
     @Override
-    public void evolutionComplete(RunStrategy strategy, int generation, List<Ranking> population) {
+    public void evolutionComplete(RunStrategy strategy, int generation, Collection<Ranking> population) {
         int jobId = strategy.getConfiguration().getJobId();
         long executionTime = System.currentTimeMillis() - this.jobStartTimes.remove(jobId);
         
@@ -151,14 +151,15 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
         Objective trainingObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.TRAINING, strategy.getConfiguration());
         Objective validationObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.VALIDATION, strategy.getConfiguration());
         Objective learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
-        for (int i = 0; i < population.size(); i++) {
-            Ranking individual = population.get(i);
+
+        int i = 0;
+        for (Ranking individual : population) {
             FinalSolution finalSolution = new FinalSolution(individual);
             //This condition is used in production release only.. performance is calculated only for first individual
-            if(i==0){
-                double[] trainingPerformace = trainingObjective.fitness(individual.getTree());
-                double[] validationPerformance = validationObjective.fitness(individual.getTree());
-                double[] learningPerformance = learningObjective.fitness(individual.getTree());
+            if(i++==0){
+                double[] trainingPerformace = trainingObjective.fitness(individual.getNode());
+                double[] validationPerformance = validationObjective.fitness(individual.getNode());
+                double[] learningPerformance = learningObjective.fitness(individual.getNode());
                 PerformacesObjective.populatePerformancesMap(trainingPerformace, finalSolution.getTrainingPerformances(),isFlagging);
                 PerformacesObjective.populatePerformancesMap(validationPerformance, finalSolution.getValidationPerformances(),isFlagging);
                 PerformacesObjective.populatePerformancesMap(learningPerformance, finalSolution.getLearningPerformances(),isFlagging);

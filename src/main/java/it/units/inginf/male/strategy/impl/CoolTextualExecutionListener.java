@@ -133,7 +133,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     }
 
     @Override
-    public void logGeneration(RunStrategy strategy, int generation, Node best, double[] fitness, List<Ranking> population) {
+    public void logGeneration(RunStrategy strategy, int generation, Node best, double[] fitness, Collection<Ranking> population) {
         int jobId = strategy.getConfiguration().getJobId();
         int done = 20 * generation / strategy.getConfiguration().getEvolutionParameters().getGenerations();
         double perc = Math.round(1000 * generation / (double) strategy.getConfiguration().getEvolutionParameters().getGenerations()) / 10f;
@@ -150,13 +150,17 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
 
         //let's store the current generatin best(fitness) individual performances on validation. remind performances indexes != fintesses 
-        Ranking bestRanking = new Ranking(-1, best, fitness);
+        Ranking bestRanking = new Ranking(best, fitness);
         FinalSolution generationBestSolution = new FinalSolution(bestRanking);
          
  
         //Only  the learning performance i needed by the checkBestCandidate
         Objective learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
-        double[] learningPerformance = learningObjective.fitness(population.get(0).getTree());
+
+        Ranking best2 = population.iterator().next();
+
+        double[] learningPerformance = learningObjective.fitness(best2.getNode());
+
         PerformacesObjective.populatePerformancesMap(learningPerformance, generationBestSolution.getLearningPerformances(), isFlagging);
         //update best for visualization sake; uses the same algorithm as in BasicExecutionListener
         this.updateBest(generationBestSolution);
@@ -174,7 +178,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     }
 
     @Override
-    public void evolutionComplete(RunStrategy strategy, int generation, List<Ranking> population) {
+    public void evolutionComplete(RunStrategy strategy, int generation, Collection<Ranking> population) {
         int jobId = strategy.getConfiguration().getJobId();
         long executionTime = System.currentTimeMillis() - this.jobStartTimes.remove(jobId);
 
@@ -204,14 +208,15 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         Objective trainingObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.TRAINING, strategy.getConfiguration());
         Objective validationObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.VALIDATION, strategy.getConfiguration());
         Objective learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
-        for (int i = 0; i < population.size(); i++) {
-            Ranking individual = population.get(i);
+
+        int i = 0;
+        for (Ranking individual : population) {
             FinalSolution finalSolution = new FinalSolution(individual);
             //performance is calculated only for first individual
-            if(i==0){
-                double[] trainingPerformace = trainingObjective.fitness(individual.getTree());
-                double[] validationPerformance = validationObjective.fitness(individual.getTree());
-                double[] learningPerformance = learningObjective.fitness(individual.getTree());
+            if(i++==0){
+                double[] trainingPerformace = trainingObjective.fitness(individual.getNode());
+                double[] validationPerformance = validationObjective.fitness(individual.getNode());
+                double[] learningPerformance = learningObjective.fitness(individual.getNode());
                 PerformacesObjective.populatePerformancesMap(trainingPerformace, finalSolution.getTrainingPerformances(), isFlagging);
                 PerformacesObjective.populatePerformancesMap(validationPerformance, finalSolution.getValidationPerformances(), isFlagging);
                 PerformacesObjective.populatePerformancesMap(learningPerformance, finalSolution.getLearningPerformances(), isFlagging);

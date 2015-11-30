@@ -17,12 +17,15 @@
  */
 package it.units.inginf.male.utils;
 
+import com.gs.collections.api.map.MutableMap;
 import com.gs.collections.api.set.primitive.CharSet;
 import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.set.mutable.UnifiedSet;
 import com.gs.collections.impl.set.mutable.primitive.CharHashSet;
 import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.objective.Ranking;
+import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.RegexRange;
 
 import java.io.*;
@@ -111,15 +114,16 @@ public class Utils {
     }
 
     public static boolean isAParetoDominateByB(double fitnessA[], double fitnessB[]) {
+        final int n = fitnessA.length;
         boolean dominate = false;
-        for (int i = 0; i < fitnessA.length; i++) {
+        for (int i = 0; i < n; i++) {
             double a = fitnessA[i];
             double b = fitnessB[i];
-            if (a > b) {
+
+            if (a > b)
                 dominate = true;
-            } else if (a < b) {
+            else if (a < b)
                 return false;
-            }
         }
         return dominate;
     }
@@ -130,46 +134,31 @@ public class Utils {
 
 
     /** return if it will be necessary to call again */
-    public static boolean getFirstParetoFront(Collection<Ranking> itmp, int targetSize /*, Consumer<Ranking> withWinner*/) {
+    public static MutableMap<Node,double[]> getFirstParetoFront(MutableMap<Node,double[]> r, int targetSize /*, Consumer<Ranking> withWinner*/) {
 
-        if (itmp.size() <= targetSize)
-            return false;
+        if (r.size() <= targetSize)
+            return r;
 
-        List<Ranking> toRemove = new FastList();
+        List<Node> toRemove = new FastList(0);
 
-        Ranking[] iitmp = itmp.toArray(new Ranking[itmp.size()]);
+        r.forEachKeyValue((n1,f1) -> {
 
-        for (Ranking r1 : iitmp) {
+            if (r.anySatisfy(f2 -> {
+                if (f1==f2)
+                    return false;
 
-
-            boolean isDominate = false;
-
-            final double[] f1 = r1.getFitness();
-
-            for (Ranking r2 : iitmp) {
-
-                if (r1 == r2) /* (r1.equals(r2)) */ continue;
-
-                if (Utils.isAParetoDominateByB(f1, r2.getFitness())) {
-                    isDominate = true;
-                    //withWinner.accept(r2);
-                    break;
-                }
+                return Utils.isAParetoDominateByB(f1, f2);
+            })) {
+                //n2 dominates n1
+                toRemove.add(n1);
             }
+        });
 
-            if (isDominate) {
-                toRemove.add(r1);
-            }
+        if (toRemove.size() > 0) {
+            return r.withoutAllKeys(toRemove);
         }
 
-        if (!toRemove.isEmpty()) {
-            itmp.removeAll(toRemove);
-
-            if ((itmp.size()) <= targetSize)
-                return false;
-        }
-
-        return false;
+        return r;
     }
 
     public static String cpuInfo() throws IOException {
@@ -189,8 +178,8 @@ public class Utils {
         return "";
     }
 
-    public static double diversity(List<Ranking> population) {
-        Set<String> tmp = new HashSet<>(population.size());
+    public static double diversity(Collection<Ranking> population) {
+        Set<String> tmp = new UnifiedSet(population.size());
         for (Ranking r : population) {
             tmp.add(r.getDescription());
         }

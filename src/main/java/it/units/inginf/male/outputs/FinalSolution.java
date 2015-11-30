@@ -34,7 +34,7 @@ public class FinalSolution extends Solution{
 
     public FinalSolution(Ranking individual) {
         super(individual);
-        this.solutionJS = getDescriptionJavascript(individual.getTree());
+        this.solutionJS = getDescriptionJavascript(individual.getNode());
     }
    
     private String getDescriptionJavascript(Node node){

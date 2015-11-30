@@ -20,7 +20,7 @@ package it.units.inginf.male.generations;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.tree.Node;
-import java.util.ArrayList;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,8 +33,8 @@ public class EmptyPopulationBuilder implements InitialPopulationBuilder {
     int size;
 
     @Override
-    public List<Node> init() {
-        return new ArrayList<>(size);
+    public void init(List<Node> target) {
+
     }
 
     @Override

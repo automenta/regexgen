@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.generations;
 
+import com.gs.collections.impl.list.mutable.FastList;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.inputs.DataSet;
@@ -45,7 +46,7 @@ import java.util.*;
  */
 public class TokenizedContextPopulationBuilder implements InitialPopulationBuilder {
 
-    private List<Node> population = new LinkedList<>();
+    private List<Node> population = new FastList();
     private Map<String,Double> winnerMatchTokens;
     private Map<String,Double> winnerUnMatchTokens;
     
@@ -58,9 +59,10 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     public TokenizedContextPopulationBuilder() {
     }
 
+
     @Override
-    public List<Node> init() {
-        return new ArrayList<>(population);
+    public void init(List<Node> target) {
+        target.addAll(population);
     }
     
     @Override
@@ -121,7 +123,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             TokenizedPopulationBuilder tokenizedPopulationBuilder = new TokenizedPopulationBuilder();
             if(context == null){
                 tokenizedPopulationBuilder.setup(configuration);
-                newPopulation.addAll(tokenizedPopulationBuilder.init());
+                tokenizedPopulationBuilder.init(newPopulation);
             }else {
                 newPopulation.addAll(tokenizedPopulationBuilder.init(context));
             }

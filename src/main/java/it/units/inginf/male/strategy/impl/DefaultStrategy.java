@@ -17,6 +17,9 @@
  */
 package it.units.inginf.male.strategy.impl;
 
+import com.gs.collections.api.map.MutableMap;
+import com.gs.collections.impl.list.mutable.FastList;
+import com.gs.collections.impl.map.mutable.UnifiedMap;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.configuration.EvolutionParameters;
 import it.units.inginf.male.evaluators.TreeEvaluationException;
@@ -34,21 +37,22 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.variations.Variation;
 
 import java.util.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
- * Implements the default evolution strategy, termination criteria can be enabled thru parameters.  
+ * Implements the default evolution strategy, termination criteria can be enabled thru parameters.
  * Optional accepted parameters:
  * "terminationCriteria", Boolean, then True the termination criteria is enabled when false is disabled, Default value: false
- * "terminationCriteriaGenerations", Integer, number of generations for the termination criteria.Default value: 200   
+ * "terminationCriteriaGenerations", Integer, number of generations for the termination criteria.Default value: 200
+ *
  * @author MaleLabTs
  */
 public class DefaultStrategy implements RunStrategy {
 
     protected Context context;
     protected int maxDepth;
-    protected List<Node> population;
-    protected List<Ranking> rankings = new ArrayList<>();
+    protected final List<Node> population = new FastList();
+    protected final TreeSet<Ranking> rankings = new TreeSet(RankingComparator);
     protected Selection selection;
     protected Objective objective;
     protected Variation variation;
@@ -102,14 +106,18 @@ public class DefaultStrategy implements RunStrategy {
 
             InitialPopulationBuilder populationBuilder = ctx.getConfiguration().getPopulationBuilder();
 
-            population = populationBuilder.init();
+            populationBuilder.init(population);
             Generation ramped = new Ramped(this.maxDepth, this.context);
             int popSize = param.getPopulationSize();
             population.addAll(ramped.generate(popSize - this.population.size()));
 
-        //IntObjectHashMap<Ranking> remaining = new IntObjectHashMap(newPopulation.size());
-        //Set<Ranking> remaining = new UnifiedSet(population.size());
-        eachRankings(population, objective, rankings::add);
+            //IntObjectHashMap<Ranking> remaining = new IntObjectHashMap(newPopulation.size());
+            //Set<Ranking> remaining = new UnifiedSet(population.size());
+            //this.rankings = new TreeSet(RankingComparator);
+            eachRankings(population, objective, (n, f) -> {
+                rankings.add(new Ranking(n, f));
+                //population.add(n);
+            });
 
 //        rankings.clear();
 //
@@ -135,10 +143,10 @@ public class DefaultStrategy implements RunStrategy {
 
                 evolve();
 
-                Ranking best = rankings.get(0);
+                Ranking best = rankings.first();
                 doneGenerations = generation + 1;
                 if (listener != null) {
-                    listener.logGeneration(this, doneGenerations, best.getTree(), best.getFitness(), rankings);
+                    listener.logGeneration(this, doneGenerations, best.getNode(), best.getFitness(), rankings);
                 }
                 boolean allPerfect = true;
                 for (double fitness : best.getFitness()) {
@@ -151,14 +159,14 @@ public class DefaultStrategy implements RunStrategy {
                     break;
                 }
 
-                if(terminationCriteria){
+                if (terminationCriteria) {
                     String newBestValue = best.getDescription();
-                    if(newBestValue.equals(oldGenerationBestValue)){
+                    if (newBestValue.equals(oldGenerationBestValue)) {
                         terminationCriteriaGenerationsCounter++;
                     } else {
                         terminationCriteriaGenerationsCounter = 0;
                     }
-                    if(terminationCriteriaGenerationsCounter >= this.terminationCriteriaGenerations) {
+                    if (terminationCriteriaGenerationsCounter >= this.terminationCriteriaGenerations) {
                         break;
                     }
                     oldGenerationBestValue = newBestValue;
@@ -170,10 +178,18 @@ public class DefaultStrategy implements RunStrategy {
 
             }
 
-            //now generation value is already last generation + 1, no reason to add +1
-            if (listener != null) {
-                listener.evolutionComplete(this, doneGenerations, rankings);
-            }
+            //                //We have to evaluate the new solutions on the testing dataset
+            TreeSet<Ranking> tmp = new TreeSet(RankingComparator);
+            sortRankings(population, objective, tmp);
+
+
+            listener.evolutionComplete(this, doneGenerations - 1, tmp);
+
+
+//            //now generation value is already last generation + 1, no reason to add +1
+//            if (listener != null) {
+//                listener.evolutionComplete(this, doneGenerations, rankings);
+//            }
             return null;
         } catch (Throwable x) {
             throw new TreeEvaluationException("Error during evaluation of a tree", x, this);
@@ -242,17 +258,23 @@ public class DefaultStrategy implements RunStrategy {
 //        }
     }
 
-    protected static List<Ranking> buildRankings(List<Node> population, Objective objective) {
-        List<Ranking> result = new ArrayList<>(population.size());
-        eachRankings(population, objective, result::add);
-        return result;
+    protected static MutableMap<Node, double[]> buildRankings(List<Node> population, Objective objective) {
+        MutableMap<Node, double[]> each = new UnifiedMap();
+        eachRankings(population, objective, each);
+        return each;
     }
 
-    protected static void eachRankings(List<Node> population, Objective objective, Consumer<Ranking> each) {
-        int id = 0;
-        for (Node tree: population) {
-            each.accept(new Ranking(id++, tree, objective));
+    protected static void eachRankings(List<Node> population, Objective objective, BiConsumer<Node, double[]> each) {
+        for (Node tree : population) {
+            each.accept(tree, objective.fitness(tree));
         }
+    }
+
+    protected static void eachRankings(List<Node> population, Objective objective, Map<Node, double[]> each) {
+        eachRankings(population, objective, (n, f) -> each.put(n, f));
+    }
+    protected static void sortRankings(List<Node> population, Objective objective, TreeSet<Ranking> each) {
+        eachRankings(population, objective, (n, f) -> each.add(new Ranking(n, f)));
     }
 
     @Override
@@ -276,20 +298,27 @@ public class DefaultStrategy implements RunStrategy {
 
     final static Comparator<Ranking> RankingComparator = new Comparator<Ranking>() {
 
-        @Override public int compare(Ranking o1, Ranking o2) {
+        @Override
+        public int compare(Ranking o1, Ranking o2) {
             if (o1 == o2) return 0;
 
             double[] f1 = o1.getFitness();
             double[] f2 = o2.getFitness();
             final int n = f1.length;
 
+            int balance = 0;
+
             for (int i = 0; i < n; i++) {
                 double v1 = f1[i];
                 double v2 = f2[i];
                 int result = Double.compare(v1, v2);
-                if (result!=0)
-                    return result;
+                balance += result;
             }
+
+            //TODO weight of fitness objectives
+
+            if (balance > 0) return 1;
+            if (balance < 0) return -1;
 
 //            if (result == 0) {
 //                return o1.getDescription().

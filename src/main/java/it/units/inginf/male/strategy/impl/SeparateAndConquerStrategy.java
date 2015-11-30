@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.strategy.impl;
 
+import com.gs.collections.impl.set.mutable.UnifiedSet;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.evaluators.TreeEvaluationException;
 import it.units.inginf.male.objective.Objective;
@@ -103,7 +104,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
         try {
             listener.evolutionStarted(this);
             initialize();
-            List<Node> bests = new LinkedList<>();
+            Set<Node> bests = new UnifiedSet<>();
             //Variables for termination criteria
             context.setSeparateAndConquerEnabled(true);
 
@@ -114,13 +115,13 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 context.setStripedPhase(context.getDataSetContainer().isDataSetStriped() && ((generation % context.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 
                 evolve();
-                Ranking best = rankings.get(0);
+                Ranking best = rankings.first();
 
                 //computes joined solution and fitenss on ALL training
                 List<Node> tmpBests = new LinkedList<>(bests);
                  
                 
-                tmpBests.add(best.getTree());
+                tmpBests.add(best.getNode());
                 
                 Node joinedBest = joinSolutions(tmpBests);
                 context.setSeparateAndConquerEnabled(false);
@@ -135,7 +136,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                     listener.logGeneration(this, generation + 1, joinedBest, fitnessOfJoined, this.rankings);
                 }
                 boolean allPerfect = true;
-                for (double fitness : this.rankings.get(0).getFitness()) {
+                for (double fitness : this.rankings.first().getFitness()) {
                     if (Math.round(fitness * 10000) != 0) {
                         allPerfect = false;
                         break;
@@ -147,7 +148,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
                 Objective trainingObjective = new PerformacesObjective();
                 trainingObjective.setup(context);
-                double[] trainingPerformace = trainingObjective.fitness(best.getTree());
+                double[] trainingPerformace = trainingObjective.fitness(best.getNode());
                 Map<String, Double> performancesMap = new HashMap<>();
                 PerformacesObjective.populatePerformancesMap(trainingPerformace, performancesMap, isFlagging);
 
@@ -163,10 +164,10 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
                 if (terminationCriteriaGenerationsCounter >= terminationCriteriaGenerations && pr >= dividePrecisionThreashold && generation < (param.getGenerations() - 1)) {
                     terminationCriteriaGenerationsCounter = 0;
-                    bests.add(rankings.get(0).getTree());
+                    bests.add(best.getNode());
                     // remove matched matches
                     StringBuilder builder = new StringBuilder();
-                    rankings.get(0).getTree().describe(builder);
+                    best.getNode().describe(builder);
                     context.getTrainingDataset().addSeparateAndConquerLevel(builder.toString(), (int) context.getSeed(), convertToUnmatch, isFlagging);
 
                     // check if matches still exists, when matches are zero, the new level is removed and the evolution exits.
@@ -185,9 +186,9 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
             }
 
-            if (!bests.contains(rankings.get(0).getTree())) {
-                bests.add(rankings.get(0).getTree());
-            }
+            Ranking best = rankings.first();
+            bests.add(best.getNode());
+
              
              
             //THe bests list insertion code should be refined.
@@ -195,14 +196,15 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 List<Node> dividedPopulation = new ArrayList<>(population.size());
                 List<Node> tmpBests = new LinkedList<>(bests);
                 for (Ranking r : rankings) {
-                    tmpBests.set(tmpBests.size() - 1, r.getTree());
+                    tmpBests.set(tmpBests.size() - 1, r.getNode());
                     dividedPopulation.add(joinSolutions(tmpBests));
                 }
 
-                //We have to evaluate the new solutions on the testing dataset
+//                //We have to evaluate the new solutions on the testing dataset
                 context.setSeparateAndConquerEnabled(false);
-                List<Ranking> tmp = buildRankings(dividedPopulation, objective);
-                
+                TreeSet<Ranking> tmp = new TreeSet();
+                sortRankings(dividedPopulation, objective, tmp);
+
 
                 listener.evolutionComplete(this, generation - 1, tmp);
             }

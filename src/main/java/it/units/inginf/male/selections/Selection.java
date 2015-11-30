@@ -20,7 +20,7 @@ package it.units.inginf.male.selections;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.tree.Node;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  *
@@ -28,5 +28,5 @@ import java.util.List;
  */
 public interface Selection {
 
-    public Node select(List<Ranking> population);
+    public Node select(Collection<Ranking> population);
 }

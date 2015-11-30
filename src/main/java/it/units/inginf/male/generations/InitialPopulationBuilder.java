@@ -32,7 +32,7 @@ public interface InitialPopulationBuilder {
      * Returns a copy of the shared population list
      * @return
      */
-    public List<Node> init();
+    public void init(List<Node> target);
     
     
     /**

@@ -29,12 +29,10 @@ final public class Ranking {
 
     private final Node tree;
     private final double[] fitness;
-    public final int id;
 
-    public Ranking(int id, Node tree, double[] fitness) {
+    public Ranking(Node tree, double[] fitness) {
         this.tree = tree;
         this.fitness = fitness;
-        this.id = id; //(int)IDFactory.nextID();
     }
 
     @Override
@@ -45,16 +43,13 @@ final public class Ranking {
                 '}';
     }
 
-    public Ranking(int id, Node tree, Objective objective) {
-        this(id, tree, objective.fitness(tree));
-    }
 
     public double[] getFitness() {
         return fitness;
     }
 
 
-    public Node getTree() {
+    public Node getNode() {
         return tree;
     }    
     
@@ -87,8 +82,8 @@ final public class Ranking {
     }
 
     @Override
-    public int hashCode() {
-        return id; //tree.hashCode();
+    public final int hashCode() {
+        return tree.hashCode(); //tree.hashCode();
 //        int hash = 5;
 //        hash = 97 * hash + (this.tree != null ? this.tree.hashCode() : 0);
 //        return hash;

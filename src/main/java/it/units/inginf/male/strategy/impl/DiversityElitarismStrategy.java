@@ -17,8 +17,9 @@
  */
 package it.units.inginf.male.strategy.impl;
 
+import com.gs.collections.api.map.MutableMap;
 import com.gs.collections.api.tuple.Twin;
-import com.gs.collections.impl.set.mutable.UnifiedSet;
+import com.gs.collections.impl.map.mutable.UnifiedMap;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.generations.Generation;
 import it.units.inginf.male.generations.Ramped;
@@ -65,25 +66,27 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
             newPopulation.addAll(population);
         }
         
-        boolean allPerfect = true;
-        for (double fitness : rankings.get(0).getFitness()) {
-            if (Math.round(fitness * 10000) != 0) {
-                allPerfect = false;
-                break;
-            }
-        }
-        if (allPerfect) {
-            return;
-        }        
-        
 
-        
+            boolean allPerfect = true;
+            for (double fitness : rankings.first().getFitness()) {
+                if (Math.round(fitness * 10000) != 0) {
+                    allPerfect = false;
+                    break;
+                }
+            }
+            if (allPerfect) {
+                return;
+            }
+
+
+
+
         int stepPopSize = deepDiversity? popSize+oldPopSize : oldPopSize;
 
         Random rng = context.getRandom();
         float crossoverProb = param.getCrossoverProbability();
         Selection sel = this.selection;
-        List<Ranking> r = this.rankings;
+        TreeSet<Ranking> r = this.rankings;
 
         while (newPopulation.size() < stepPopSize) {
 
@@ -117,31 +120,34 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         }
 
         //IntObjectHashMap<Ranking> remaining = new IntObjectHashMap(newPopulation.size());
-        UnifiedSet<Ranking> remaining = new UnifiedSet(newPopulation.size());
-        eachRankings(newPopulation, objective, remaining::add);
+        MutableMap<Node,double[]> remaining = new UnifiedMap(newPopulation.size());
+        eachRankings(newPopulation, objective, remaining);
 
         int maxPopulation = param.getPopulationSize();
         int nextPopSize =
-                Math.min( maxPopulation, (int)Math.ceil(remaining.size() * 0.7));
+                Math.min( remaining.size(),
+                          (int)Math.ceil(maxPopulation * 0.7));
 
+        System.out.println(rankings.size() + "> \t" + rankings.first() + " " + rankings.last());
 
-        while (Utils.getFirstParetoFront(remaining, nextPopSize));
+        do {
+            MutableMap<Node, double[]> nextRemaining = Utils.getFirstParetoFront(remaining, nextPopSize);
+            if (nextRemaining == remaining) break;
+            remaining = nextRemaining;
+        }while (remaining.size() > nextPopSize);
 
-        //System.out.println(maxPopulation + " " + nextPopSize + " -> " + remaining.size() );
-
-
-
-        List<Ranking> rr = this.rankings = remaining.toSortedList(RankingComparator);
-
-        //Obtain an ordinated (as Rankings are) population
-        List<Node> pp = population;
-
+        List<Node> pp = population; //Obtain an ordinated (as Rankings are) population
         pp.clear();
 
-        int nn = Math.min(rr.size(), maxPopulation);
-        for (int i = 0; i < nn; i++) {
-            pp.add(rr.get(i).getTree());
-        }
+        Set<Ranking> rr = this.rankings;
+        rr.clear();
+        remaining.forEachKeyValue( (n,f) -> {
+            rr.add(new Ranking(n,f));
+            pp.add(n);
+        });
+
+        System.out.println(rankings.size() + "< \t" + rankings.first() + " " + rankings.last());
+
     }   
 
      
