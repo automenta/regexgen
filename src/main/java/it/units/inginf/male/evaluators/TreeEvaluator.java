@@ -30,6 +30,6 @@ import java.util.Map;
 public interface TreeEvaluator {
 
     public void setup(Map<String,String> parameters);
-    List<List<Bounds>> evaluate(Node root, Context context) throws TreeEvaluationException;
+    List<Bounds[]> evaluate(Node root, Context context) throws TreeEvaluationException;
     
 }

@@ -22,11 +22,8 @@ import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Example;
 import it.units.inginf.male.utils.BasicStats;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,7 +56,7 @@ public class Results {
     transient private String machineHardwareSpecifications;
     private FinalSolution bestSolution;
     //extractions of best solution on the learning dataset
-    private List<List<DataSet.Bounds>> bestExtractions;
+    private List<DataSet.Bounds[]> bestExtractions;
     private List<List<String>> bestExtractionsStrings;
     //original dataset examples, these are optional properties
     private List<Example> examples;
@@ -224,11 +221,11 @@ public class Results {
         this.numberTrainingUnmatches = numberTrainingUnmatches;
     }
 
-    public List<List<DataSet.Bounds>> getBestExtractions() {
+    public List<DataSet.Bounds[]> getBestExtractions() {
         return bestExtractions;
     }
 
-    public void setBestExtractions(List<List<DataSet.Bounds>> bestExtractions) {
+    public void setBestExtractions(List<DataSet.Bounds[]> bestExtractions) {
         this.bestExtractions = bestExtractions;
     }
 

@@ -20,8 +20,6 @@ package it.units.inginf.male.selections;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.tree.Node;
 
-import java.util.Collection;
-
 /**
  *
  * @author MaleLabTs
@@ -29,7 +27,7 @@ import java.util.Collection;
 public class Rank implements Selection{
 
     @Override
-    public Node select(Collection<Ranking> population) {
+    public Node select(Ranking[] population) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -54,7 +54,7 @@ public class MainTest {
 
     private void run(DataSet d) throws Exception {
         Results r = Main.run(new SimpleConfig(
-                d, 1000, 5000)
+                d, 1500, 10000)
                 .buildConfiguration()
         );
 

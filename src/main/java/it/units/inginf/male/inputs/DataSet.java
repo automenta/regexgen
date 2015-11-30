@@ -18,6 +18,7 @@
 package it.units.inginf.male.inputs;
 
 import com.google.gson.Gson;
+import com.gs.collections.impl.list.mutable.FastList;
 import it.units.inginf.male.utils.Range;
 
 import java.util.*;
@@ -51,7 +52,7 @@ public class DataSet {
     public String name;
     public String description;
     public String regexTarget;
-    public List<Example> examples = new ArrayList<>();
+    public final List<Example> examples = new FastList<>();
     
     private transient int numberMatches;
     private transient int numberUnmatches;
@@ -530,18 +531,18 @@ public class DataSet {
             this.match= new ArrayList<>(example.match);
             this.unmatch = new ArrayList<>(example.unmatch);
             if(example.matchedStrings!=null){
-                this.matchedStrings = new ArrayList<>(example.matchedStrings);
+                this.matchedStrings = new FastList<>(example.matchedStrings);
             }
             if(example.unmatchedStrings!=null){
-                this.unmatchedStrings = new ArrayList<>(example.unmatchedStrings);
+                this.unmatchedStrings = new FastList<>(example.unmatchedStrings);
         }
         }
         
         public String string;
-        public List<Bounds> match = new ArrayList<>();
-        public List<Bounds> unmatch = new ArrayList<>();
-        transient protected List<String> matchedStrings = new ArrayList<>();
-        transient protected List<String> unmatchedStrings = new ArrayList<>();
+        public List<Bounds> match = new FastList<>();
+        public List<Bounds> unmatch = new FastList<>();
+        transient protected List<String> matchedStrings = new FastList<>();
+        transient protected List<String> unmatchedStrings = new FastList<>();
 
         public void addMatchBounds(int bs, int bf) {
             Bounds boundaries = new Bounds(bs, bf);
@@ -778,7 +779,7 @@ public class DataSet {
          * @param zoneRanges
          * @return
          */
-        static public int countRangesThatCollideZone(List<Bounds> ranges, List<Bounds> zoneRanges) {
+        static public int countRangesThatCollideZone(Bounds[] ranges, List<Bounds> zoneRanges) {
             Collections.sort(zoneRanges);
              
             //This approach relies on the fact that both annotatedRanges and extracted ranges are ordered

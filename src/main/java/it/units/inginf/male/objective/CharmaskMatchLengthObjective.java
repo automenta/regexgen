@@ -17,7 +17,7 @@
  */
 package it.units.inginf.male.objective;
 
-import it.units.inginf.male.utils.BasicStats;
+import com.gs.collections.impl.list.mutable.FastList;
 import it.units.inginf.male.evaluators.TreeEvaluationException;
 import it.units.inginf.male.evaluators.TreeEvaluator;
 import it.units.inginf.male.inputs.Context;
@@ -25,7 +25,8 @@ import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.inputs.DataSet.Example;
 import it.units.inginf.male.tree.Node;
-import java.util.ArrayList;
+import it.units.inginf.male.utils.BasicStats;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -56,7 +57,7 @@ public class CharmaskMatchLengthObjective implements Objective {
 
         double fitnessLenght;
 
-        List<List<Bounds>> evaluate;
+        List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
             StringBuilder builder = new StringBuilder();
@@ -77,14 +78,14 @@ public class CharmaskMatchLengthObjective implements Objective {
         BasicStats statsCharsOverall = new BasicStats();
 
         int i = 0;
-        for (List<Bounds> result : evaluate) {
+        for (Bounds[] result : evaluate) {
             BasicStats stats = new BasicStats();
             BasicStats statsChars = new BasicStats();
             //Characted extracted in the right place (match)
             Example example = dataSetView.getExample(i);
             List<Bounds> expectedMatchMask = example.getMatch();
             List<Bounds> expectedUnmatchMask = example.getUnmatch();
-            List<Bounds> annotatedMask = new ArrayList<>(expectedMatchMask);
+            List<Bounds> annotatedMask = new FastList(expectedMatchMask);
             annotatedMask.addAll(expectedUnmatchMask);
 
             stats.tp = countIdenticalRanges(result, expectedMatchMask);
@@ -108,7 +109,7 @@ public class CharmaskMatchLengthObjective implements Objective {
     }
 
     //number of chars of this extracted rages which falls into expected ranges
-    private int intersection(List<Bounds> extractedRanges, List<Bounds> expectedRanges) {
+    private int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
          
         for (Bounds extractedBounds : extractedRanges) {
@@ -121,7 +122,7 @@ public class CharmaskMatchLengthObjective implements Objective {
     }
 
     //number of idential intervals
-    private int countIdenticalRanges(List<Bounds> rangesA, List<Bounds> rangesB) {
+    private int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
          
         for (Bounds boundsA : rangesA) {

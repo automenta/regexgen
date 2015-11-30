@@ -23,8 +23,6 @@ import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.inputs.DataSet.Example;
 import it.units.inginf.male.tree.Node;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -37,10 +35,12 @@ import java.util.regex.PatternSyntaxException;
  */
 public class DefaultTreeEvaluator implements TreeEvaluator {
 
-    @Override
-    public List<List<Bounds>> evaluate(Node root, Context context) throws TreeEvaluationException {
+    private final static Bounds[] empty = new Bounds[0];
 
-        List<List<Bounds>> results = new ArrayList<>(context.getCurrentDataSetLength());
+    @Override
+    public List<Bounds[]> evaluate(Node root, Context context) throws TreeEvaluationException {
+
+        List<Bounds[]> results = new FastList(context.getCurrentDataSetLength());
 
         StringBuilder sb = new StringBuilder();
         root.describe(sb);
@@ -61,14 +61,21 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
         return results;
     }
 
-    private static void eval(List<List<Bounds>> results, Matcher matcher, Example example) {
+    private static void eval(List<Bounds[]> results, Matcher matcher, Example example) {
         try {
             Matcher m = matcher.reset(example.getString());
-            List<Bounds> b = new FastList<>();
+
+            List<Bounds> b = new FastList<>(0);
+
             while (m.find()) {
                 b.add(new Bounds(matcher.start(0), matcher.end(0)));
             }
-            results.add(b);
+
+            if (!b.isEmpty())
+                results.add(b.toArray(new Bounds[b.size()]));
+            else
+                results.add(empty);
+
         } catch (StringIndexOutOfBoundsException ex) {
             /**
              * Workaround: ref BUG: 6984178
@@ -76,7 +83,7 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
              * with greedy quantifiers returns exception
              * instead than "false".
              */
-            results.add(Collections.<Bounds>emptyList());
+            results.add(empty);
         }
     }
 

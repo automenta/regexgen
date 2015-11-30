@@ -21,8 +21,6 @@ import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.tree.Node;
 
-import java.util.Collection;
-
 /**
  *
  * @author MaleLabTs
@@ -36,11 +34,9 @@ public class Tournament implements Selection {
     }
 
     @Override
-    public Node select(Collection<Ranking> _population) {
+    public Node select(Ranking[] population) {
 
-        int size = _population.size();
-        Ranking[] population = _population.toArray(new Ranking[size]);
-
+        final int size = population.length;
         int best = size;
         for (int t = 0; t < 7; t++) {
             int index = context.getRandom().nextInt(size);

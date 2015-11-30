@@ -88,13 +88,17 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         Selection sel = this.selection;
         TreeSet<Ranking> r = this.rankings;
 
+
+        Ranking[] rr = r.toArray(new Ranking[r.size()]);
+
+
         while (newPopulation.size() < stepPopSize) {
 
             double random = rng.nextDouble();
 
             if (random <= crossoverProb && oldPopSize - newPopulation.size() >= 2) {
-                Node selectedA = sel.select(r);
-                Node selectedB = sel.select(r);
+                Node selectedA = sel.select(rr);
+                Node selectedB = sel.select(rr);
 
                 Twin<Node> newIndividuals = variation.crossover(selectedA, selectedB, maxCrossoverTries);
                 if (newIndividuals != null) {
@@ -102,11 +106,11 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
                     newPopulation.add(newIndividuals.getTwo());
                 }
             } else if (random <= crossoverProb + param.getMutationPobability()) {
-                Node mutant = sel.select(r);
+                Node mutant = sel.select(rr);
                 mutant = variation.mutate(mutant);
                 newPopulation.add(mutant);
             } else {
-                Node duplicated = sel.select(r);
+                Node duplicated = sel.select(rr);
                 newPopulation.add(duplicated);
             }
         }
@@ -129,18 +133,22 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
                           maxPopulation ); //(int)Math.ceil(maxPopulation * 0.7));
 
         do {
+
             MutableMap<Node, double[]> nextRemaining = Utils.getFirstParetoFront(remaining, nextPopSize);
-            if (nextRemaining == remaining) break;
+
+            if (nextRemaining == null) break;
+
             remaining = nextRemaining;
+
         }while (remaining.size() > nextPopSize);
 
         List<Node> pp = population; //Obtain an ordinated (as Rankings are) population
         pp.clear();
 
-        Set<Ranking> rr = this.rankings;
-        rr.clear();
+        Set<Ranking> rankings = this.rankings;
+        rankings.clear();
         remaining.forEachKeyValue( (n,f) -> {
-            rr.add(new Ranking(n,f));
+            rankings.add(new Ranking(n,f));
             pp.add(n);
         });
 

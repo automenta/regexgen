@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.strategy.impl;
 
+import com.gs.collections.impl.set.mutable.UnifiedSet;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.evaluators.TreeEvaluationException;
 import it.units.inginf.male.evaluators.TreeEvaluator;
@@ -226,7 +227,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
         return results;
     }
 
-    public List<List<DataSet.Bounds>> getBestEvaluations() throws TreeEvaluationException{
+    public List<DataSet.Bounds[]> getBestEvaluations() throws TreeEvaluationException{
         TreeEvaluator treeEvaluator = this.configuration.getEvaluator();
         Node bestIndividualReplica = new Constant(this.status.best.getSolution());
         return treeEvaluator.evaluate(bestIndividualReplica, new Context(Context.EvaluationPhases.LEARNING, this.configuration));
@@ -234,18 +235,18 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
  
     //errors per example, on learning
     public List<BasicStats> getBestEvaluationStats(int startIndex, int endIndex) throws TreeEvaluationException{
-        List<List<DataSet.Bounds>> bestevaluations = getBestEvaluations();//.subList(startIndex, endIndex+1);
+        List<DataSet.Bounds[]> bestevaluations = getBestEvaluations();//.subList(startIndex, endIndex+1);
         DataSet dataset = this.configuration.getDatasetContainer().getLearningDataset();
         List<BasicStats> statsPerExample = new LinkedList<>();
         for (int index = startIndex; index <= endIndex; index++) {
-            List<DataSet.Bounds> extractionsList = bestevaluations.get(index);
-            Set<DataSet.Bounds> extractionsSet = new HashSet<>(extractionsList);
+            DataSet.Bounds[] extractionsList = bestevaluations.get(index);
+            Set<DataSet.Bounds> extractionsSet = UnifiedSet.newSetWith(extractionsList);
             DataSet.Example example = dataset.getExample(index);
             extractionsSet.removeAll(example.getMatch()); //left only false extractions
             BasicStats exampleStats = new BasicStats();
             exampleStats.fn = -1; //unset, not interesting at the moment
             exampleStats.fp = extractionsSet.size();
-            exampleStats.tp = extractionsList.size() - exampleStats.fp;
+            exampleStats.tp = extractionsList.length - exampleStats.fp;
             exampleStats.tn = -1; //unset, not interesting at the moment
             statsPerExample.add(exampleStats);
         }

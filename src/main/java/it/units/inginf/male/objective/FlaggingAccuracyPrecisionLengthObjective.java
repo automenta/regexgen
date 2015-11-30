@@ -55,7 +55,7 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
 
         double fitnessLenght;
 
-        List<List<Bounds>> evaluate;
+        List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
             StringBuilder builder = new StringBuilder();
@@ -72,7 +72,7 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
        BasicStats statsOverall = new BasicStats();
 
         for (int i = 0; i < evaluate.size(); i++) {
-            List<Bounds> result = evaluate.get(i);
+            Bounds[] result = evaluate.get(i);
 
             Example example = dataSetView.getExample(i);
             
@@ -103,20 +103,20 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
         return mm.isEmpty() && ex.unmatch.isEmpty();
     }
      
-    public static boolean isTruePositive(List<Bounds> individualMatches, List<Bounds> expectedMatches){
-        return !individualMatches.isEmpty() && !expectedMatches.isEmpty();
+    public static boolean isTruePositive(Bounds[] individualMatches, List<Bounds> expectedMatches){
+        return individualMatches.length > 0 && !expectedMatches.isEmpty();
     }
 
-    public static boolean isFalsePositive(List<Bounds> individualMatches, List<Bounds> expectedUnmatches){
-        return !individualMatches.isEmpty() && !expectedUnmatches.isEmpty();
+    public static boolean isFalsePositive(Bounds[] individualMatches, List<Bounds> expectedUnmatches){
+        return individualMatches.length > 0 && !expectedUnmatches.isEmpty();
     }
     
-    public static boolean isFalseNegative(List<Bounds> individualMatches, List<Bounds> expectedMatches){
-        return individualMatches.isEmpty() && !expectedMatches.isEmpty();
+    public static boolean isFalseNegative(Bounds[] individualMatches, List<Bounds> expectedMatches){
+        return individualMatches.length == 0 && !expectedMatches.isEmpty();
     }
     
-    public static boolean isTrueNegative(List<Bounds> individualMatches, List<Bounds> expectedUnmatches){
-        return individualMatches.isEmpty() && !expectedUnmatches.isEmpty();
+    public static boolean isTrueNegative(Bounds[] individualMatches, List<Bounds> expectedUnmatches){
+        return individualMatches.length == 0 && !expectedUnmatches.isEmpty();
     }
     
     @Override

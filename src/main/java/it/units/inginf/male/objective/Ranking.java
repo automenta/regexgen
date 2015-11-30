@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.objective;
 
+import it.units.inginf.male.tree.IDFactory;
 import it.units.inginf.male.tree.Node;
 
 import java.util.Arrays;
@@ -29,10 +30,12 @@ final public class Ranking {
 
     private final Node tree;
     private final double[] fitness;
+    private final int id;
 
     public Ranking(Node tree, double[] fitness) {
         this.tree = tree;
         this.fitness = fitness;
+        this.id = (int)IDFactory.nextID();
     }
 
     @Override
@@ -83,7 +86,8 @@ final public class Ranking {
 
     @Override
     public final int hashCode() {
-        return tree.hashCode(); //tree.hashCode();
+        return id;
+        //return tree.hashCode(); //tree.hashCode();
 //        int hash = 5;
 //        hash = 97 * hash + (this.tree != null ? this.tree.hashCode() : 0);
 //        return hash;

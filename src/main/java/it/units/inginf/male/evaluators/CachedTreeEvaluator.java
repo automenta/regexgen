@@ -33,12 +33,12 @@ import java.util.WeakHashMap;
  */
 public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedEvaluator{
 
-    private final Map<Triplet<EvaluationPhases, Boolean, String>, List<List<Bounds>>> cache = new WeakHashMap<>();
+    private final Map<Triplet<EvaluationPhases, Boolean, String>, List<Bounds[]>> cache = new WeakHashMap<>();
     private long hit = 0;
     private long miss = 0;
 
     @Override
-    public List<List<Bounds>> evaluate(Node root, Context context)  {
+    public List<Bounds[]> evaluate(Node root, Context context)  {
 
         StringBuilder sb = new StringBuilder();
         root.describe(sb);
@@ -75,10 +75,10 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
     public long getCacheSizeBytes(){
         synchronized (cache) {
             long cacheSize = 0;
-            for (Map.Entry<Triplet<EvaluationPhases, Boolean, String>, List<List<Bounds>>> entry : cache.entrySet()) {
-                List<List<Bounds>> list = entry.getValue();
-                for (List<Bounds> exampleResult : list) {
-                    cacheSize+=exampleResult.size();
+            for (Map.Entry<Triplet<EvaluationPhases, Boolean, String>, List<Bounds[]>> entry : cache.entrySet()) {
+                List<Bounds[]> list = entry.getValue();
+                for (Bounds[] exampleResult : list) {
+                    cacheSize+=exampleResult.length;
                 }            
             }
             cacheSize*=(Integer.SIZE/4);

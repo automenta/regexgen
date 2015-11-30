@@ -58,7 +58,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
 
         double fitnessLenght;
 
-        List<List<Bounds>> evaluate;
+        List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
             StringBuilder builder = new StringBuilder();
@@ -79,7 +79,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
         BasicStats statsCharsOverall = new BasicStats();
 
         int i = 0;
-        for (List<Bounds> result : evaluate) {
+        for (Bounds[] result : evaluate) {
             BasicStats stats = new BasicStats();
             BasicStats statsChars = new BasicStats();
             //Characted extracted in the right place (match)
@@ -110,7 +110,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
     }
 
     //number of chars of this extracted rages which falls into expected ranges
-    private static int intersection(List<Bounds> extractedRanges, List<Bounds> expectedRanges) {
+    private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
          
         for (Bounds extractedBounds : extractedRanges) {
@@ -123,7 +123,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
     }
 
     //number of idential intervals
-    private static int countIdenticalRanges(List<Bounds> rangesA, List<Bounds> rangesB) {
+    private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
          
         for (Bounds boundsA : rangesA) {

@@ -62,7 +62,7 @@ public class PerformacesObjective implements Objective {
         DataSet dataSetView = this.context.getCurrentDataSet();
         TreeEvaluator evaluator = context.getConfiguration().getEvaluator();
         double[] fitness = new double[12];
-        List<List<Bounds>> evaluate;
+        List<Bounds[]> evaluate;
         try {
             evaluate = evaluator.evaluate(individual, context);
         } catch (TreeEvaluationException ex) {
@@ -81,7 +81,7 @@ public class PerformacesObjective implements Objective {
         BasicStats statsOverallFlagging = new BasicStats();
 
         int i = 0;
-        for (List<Bounds> result : evaluate) {
+        for (Bounds[] result : evaluate) {
             BasicStats stats = new BasicStats();
             BasicStats statsChars = new BasicStats();
             BasicStats statsFlagging = new BasicStats();
@@ -141,7 +141,7 @@ public class PerformacesObjective implements Objective {
     }
 
     //Returns number of chars of this extracted ranges which falls into expected ranges
-    private static int intersection(List<Bounds> extractedRanges, List<Bounds> expectedRanges) {
+    private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
 
         for (Bounds extractedBounds : extractedRanges) {
@@ -162,7 +162,7 @@ public class PerformacesObjective implements Objective {
     }
 
     //Rerurns the number of idential intervals in two list of ranges
-    private static int countIdenticalRanges(List<Bounds> rangesA, List<Bounds> rangesB) {
+    private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
 
         for (Bounds boundsA : rangesA) {
@@ -237,19 +237,19 @@ public class PerformacesObjective implements Objective {
         return ex.match.isEmpty() && ex.unmatch.isEmpty();
     }
 
-    public static boolean isTruePositive(List<Bounds> individualMatches, List<Bounds> expectedMatches) {
-        return !individualMatches.isEmpty() && !expectedMatches.isEmpty();
+    public static boolean isTruePositive(Bounds[] individualMatches, List<Bounds> expectedMatches) {
+        return individualMatches.length > 0 && !expectedMatches.isEmpty();
     }
 
-    public static boolean isFalsePositive(List<Bounds> individualMatches, List<Bounds> expectedUnmatches) {
-        return !individualMatches.isEmpty() && !expectedUnmatches.isEmpty();
+    public static boolean isFalsePositive(Bounds[] individualMatches, List<Bounds> expectedUnmatches) {
+        return individualMatches.length > 0 && !expectedUnmatches.isEmpty();
     }
 
-    public static boolean isFalseNegative(List<Bounds> individualMatches, List<Bounds> expectedMatches) {
-        return individualMatches.isEmpty() && !expectedMatches.isEmpty();
+    public static boolean isFalseNegative(Bounds[] individualMatches, List<Bounds> expectedMatches) {
+        return individualMatches.length == 0 && !expectedMatches.isEmpty();
     }
 
-    public static boolean isTrueNegative(List<Bounds> individualMatches, List<Bounds> expectedUnmatches) {
-        return individualMatches.isEmpty() && !expectedUnmatches.isEmpty();
+    public static boolean isTrueNegative(Bounds[] individualMatches, List<Bounds> expectedUnmatches) {
+        return individualMatches.length == 0  && !expectedUnmatches.isEmpty();
     }
 }

@@ -155,10 +155,12 @@ public class Utils {
         });
 
         if (toRemove.size() > 0) {
-            return r.withoutAllKeys(toRemove);
+            toRemove.forEach(t->r.removeKey(t));
+            return r;
+            //return r.withoutAllKeys(toRemove);
         }
 
-        return r;
+        return null;
     }
 
     public static String cpuInfo() throws IOException {

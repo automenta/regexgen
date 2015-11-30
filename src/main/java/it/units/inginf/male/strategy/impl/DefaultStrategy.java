@@ -51,7 +51,7 @@ public class DefaultStrategy implements RunStrategy {
 
     protected Context context;
     protected int maxDepth;
-    protected final List<Node> population = new FastList();
+    protected final FastList<Node> population = new FastList();
     protected final TreeSet<Ranking> rankings = new TreeSet(RankingComparator);
     protected Selection selection;
     protected Objective objective;
