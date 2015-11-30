@@ -26,7 +26,6 @@ import it.units.inginf.male.selections.best.BasicFlaggingLearningBestSelector;
 import it.units.inginf.male.strategy.impl.MultithreadStrategy;
 import it.units.inginf.male.terminalsets.FlaggingNgramsTerminalSetBuilder;
 
-import java.util.Arrays;
 import java.util.logging.Logger;
 
 
@@ -38,13 +37,13 @@ public class SimpleConfig {
     //Maximum unmatch_chars/match_chars ratio
     //and sets the maximum unmatch_chars/match_chars ratio; this value defines the margin size around the matches 
     transient private final double STRIPING_DEFAULT_MARGIN_SIZE = 10;
-    public int numberThreads = 1;
+    public int numberThreads = 2;
     public int numberOfJobs = 1;
     public int generations;
     public int populationSize;
     public DataSet dataset;
-    public boolean populateOptionalFields = false;
-    public boolean isStriped = false;
+    public boolean populateOptionalFields = true;
+    public boolean isStriped = true;
     public boolean isFlagging = false;
     
     transient public String datasetName;
@@ -119,10 +118,11 @@ public class SimpleConfig {
             //TODO change terminalSet to a more naive version?
             configuration.getTerminalSetBuilderParameters().put("discardWtokens", "false");//Takes significant chars too
             configuration.getStrategyParameters().put("isFlagging", "true"); //Enable strategy flagging
-            //Remove lookarounds
-            configuration.getOperators().removeAll(
-                    Arrays.asList("it.units.inginf.male.tree.operator.PositiveLookbehind","it.units.inginf.male.tree.operator.NegativeLookbehind",
-                            "it.units.inginf.male.tree.operator.PositiveLookahead", "it.units.inginf.male.tree.operator.NegativeLookahead"));
+
+//            //Remove lookarounds
+//            configuration.getOperators().removeAll(
+//                    Arrays.asList("it.units.inginf.male.tree.operator.PositiveLookbehind","it.units.inginf.male.tree.operator.NegativeLookbehind",
+//                            "it.units.inginf.male.tree.operator.PositiveLookahead", "it.units.inginf.male.tree.operator.NegativeLookahead"));
         }
         
         

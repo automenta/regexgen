@@ -17,20 +17,18 @@
  */
 package it.units.inginf.male.tree.operator;
 
+import com.gs.collections.impl.list.mutable.FastList;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.ParentNode;
-
-import java.util.ArrayList;
 
 /**
  *
  * @author MaleLabTs
  */
 public abstract class TernaryOperator extends ParentNode {
-    private Node parent;
 
     public TernaryOperator() {
-        super(new ArrayList(3));
+        super(new FastList(0));
     }
 
 //    @Override

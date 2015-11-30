@@ -66,29 +66,31 @@ public class Growth implements Generation {
 
     private Node grow(int depth) {
         Node _tree = randomFunction();
-        ParentNode tree = (ParentNode) _tree;
+        if (_tree.getMaxChildrenCount() > 0) {
+            ParentNode tree = (ParentNode) _tree;
 
-        if (depth >= this.maxDepth - 1) {
+            if (depth >= this.maxDepth - 1) {
 
-            for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-                Leaf leaf = randomLeaf();
-                add(tree, leaf);
-            }
-
-        } else {
-            
-            for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-
-                if (rng.nextBoolean()) {
-                    Node node = grow(depth + 1);
-                    add(tree, node);
-                } else {
+                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
                     Leaf leaf = randomLeaf();
                     add(tree, leaf);
                 }
+
+            } else {
+
+                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
+
+                    if (rng.nextBoolean()) {
+                        Node node = grow(depth + 1);
+                        add(tree, node);
+                    } else {
+                        Leaf leaf = randomLeaf();
+                        add(tree, leaf);
+                    }
+                }
             }
         }
-        return tree;
+        return _tree;
     }
 
     static void add(ParentNode tree, Node n) {

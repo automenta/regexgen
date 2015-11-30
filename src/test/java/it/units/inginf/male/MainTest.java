@@ -7,6 +7,8 @@ import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.outputs.Results;
 import org.junit.Test;
 
+import static it.units.inginf.male.DataSetTest.noise;
+
 /**
  * Created by me on 11/29/15.
  */
@@ -33,18 +35,26 @@ public class MainTest {
 
     @Test
     public void test1() throws Exception {
-        run(DataSetTest.getExampleDataSet());
+        run( DataSetTest.getExampleDataSet());
     }
     @Test
     public void test2() throws Exception {
-        run(DataSetTest.getExampleDataSetRewrite("xyzabc", "abcxyz"));
+        run(DataSetTest.getExampleDataSet2(
+
+                () -> "/*" + noise(4 + (int)(Math.random()*8)) + "*/",
+
+                "acs(x111111);", "fn_c(yy3333,ab);", "d123();", "a(x,y,z);",
+                "xf(/*ab,c*/z, z1);", "gggg(b /* !;(fs)s! */);"
+
+                //"a(dd, a123);", "b(x, yz124, v)", "b(a,a,a,a);"
+                ));
     }
 
     static final Gson resultOutput = new GsonBuilder().setPrettyPrinting().serializeSpecialFloatingPointValues().create();
 
     private void run(DataSet d) throws Exception {
         Results r = Main.run(new SimpleConfig(
-                d, 300, 5000)
+                d, 500, 10000)
                 .buildConfiguration()
         );
 

@@ -150,7 +150,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
 
         //let's store the current generatin best(fitness) individual performances on validation. remind performances indexes != fintesses 
-        Ranking bestRanking = new Ranking(best, fitness);
+        Ranking bestRanking = new Ranking(-1, best, fitness);
         FinalSolution generationBestSolution = new FinalSolution(bestRanking);
          
  

@@ -127,36 +127,46 @@ public class Utils {
 //
 //    }
 
-    public static List<Ranking> getFirstParetoFront(Collection<Ranking> tmp) {
-        List<Ranking> front = new ArrayList();
-        return getFirstParetoFront(tmp, front);
-    }
 
-    public static List<Ranking> getFirstParetoFront(Collection<Ranking> itmp, List<Ranking> front) {
+    /** return if it will be necessary to call again */
+    public static boolean getFirstParetoFront(Collection<Ranking> itmp, int targetSize /*, Consumer<Ranking> withWinner*/) {
 
-        Ranking[] tmp = itmp.toArray(new Ranking[itmp.size()]);
+        int s = itmp.size();
+        final int start = s;
+        if (s <= targetSize)
+            return false;
 
-        for (Ranking r1 : tmp) {
+        Iterator<Ranking> ii = itmp.iterator();
+        while (ii.hasNext()) {
+
+            Ranking r1 = ii.next();
 
             boolean isDominate = false;
 
             final double[] f1 = r1.getFitness();
 
-            for (Ranking r2 : tmp) {
+            for (Ranking r2 : itmp) {
 
                 if (r1 == r2) /* (r1.equals(r2)) */ continue;
 
                 if (Utils.isAParetoDominateByB(f1, r2.getFitness())) {
                     isDominate = true;
+                    //withWinner.accept(r2);
                     break;
                 }
             }
 
-            if (!isDominate) {
-                front.add(r1);
+            if (isDominate) {
+                ii.remove();
+
+                if (--s <= targetSize)
+                    return false;
             }
+
         }
-        return front;
+
+
+        return s!=start /* = if removals occurred */;
     }
 
     public static String cpuInfo() throws IOException {

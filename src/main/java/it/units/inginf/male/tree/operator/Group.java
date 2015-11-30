@@ -25,6 +25,7 @@ import it.units.inginf.male.tree.DescriptionContext;
  */
 public class Group extends UnaryOperator{
 
+
     @Override
     protected UnaryOperator buildCopy() {
         return new Group();

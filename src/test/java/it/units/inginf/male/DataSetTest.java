@@ -9,7 +9,11 @@ package it.units.inginf.male;
 import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.inputs.DataSet.Example;
-import org.junit.*;
+import org.junit.Test;
+
+import java.util.Base64;
+import java.util.Random;
+import java.util.function.Supplier;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -74,20 +78,43 @@ public class DataSetTest {
         return dataSet;
     }
 
-    public static DataSet getExampleDataSetRewrite(String input, String output) {
+    public static String noise(int len) {
+        byte[] b = new byte[len];
+        Random rng = new Random();
+        for (int i = 0; i < len; i++) {
+            b[i] = (byte)rng.nextInt(255);
+        }
+        return Base64.getEncoder().encodeToString(b);
+    }
+
+    public static DataSet getExampleDataSet2(Supplier<String> noise, String... input) {
         DataSet dataSet = new DataSet("test", "striping test", "");
         Example example = new Example();
 
-        String noise = "dsfsdfs6789 ";
-        String noise2 = " 283rh9238r3r";
+        int i = 0;
+        String j = "";
 
-        example.setString(noise + input + noise2 + output + noise);
-        int provaIndex1 = example.getString().indexOf(input);
-        int provaIndex2 = example.getString().indexOf(output, provaIndex1+1);
-        example.getMatch().add(new Bounds(provaIndex1,provaIndex1+ input.length()));
-        example.getMatch().add(new Bounds(provaIndex2,provaIndex2+ output.length()));
+        for (String x : input) {
+
+            //TODO noise as lambda param
+            String n = noise.get();  j += n; i+= n.length();
+
+            int a = i;
+            j += x; i += x.length();
+
+            example.getMatch().add(new Bounds(a, i));
+        }
+
+        j += noise.get();
+
+        System.out.println(j);
+        example.setString(j);
+
+        //example.getUnmatch().add(new Bounds(provaIndex2,provaIndex2+ input.length()));
 
         dataSet.getExamples().add(example);
+
+
         dataSet.updateStats();
         return dataSet;
     }

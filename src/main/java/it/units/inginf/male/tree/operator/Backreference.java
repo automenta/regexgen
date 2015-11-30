@@ -21,10 +21,14 @@ import it.units.inginf.male.tree.DescriptionContext;
 import it.units.inginf.male.tree.Leaf;
 
 /**
- *
+ * https://docs.oracle.com/javase/tutorial/essential/regex/groups.html#backref
  * @author MaleLabTs
  */
 public class Backreference extends Leaf<Integer> {
+
+    public Backreference(){
+        super(1 /* TODO random? */);
+    }
 
     public Backreference(int value){
         super(value);

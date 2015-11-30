@@ -17,13 +17,20 @@
  */
 package it.units.inginf.male.tree;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  * @author MaleLabTs
  */
 public class Anchor extends Leaf<String> {
 
-    //final static Set<String> allowedClasses = new HashSet<>(Arrays.asList("\\w", "\\d", ".", "\\b", "\\s"));
+    final static List<String> allowedClasses = Arrays.asList("\\w", "\\d", ".", "\\b", "\\s");
+
+    public Anchor() {
+        super(allowedClasses.get((int)(Math.random()*allowedClasses.size())));
+    }
 
     public Anchor(Anchor value) {
         super(value);

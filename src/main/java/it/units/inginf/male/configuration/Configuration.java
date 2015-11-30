@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.configuration;
 
+import com.gs.collections.impl.list.mutable.FastList;
 import it.units.inginf.male.evaluators.CachedTreeEvaluator;
 import it.units.inginf.male.evaluators.TreeEvaluator;
 import it.units.inginf.male.generations.InitialPopulationBuilder;
@@ -69,27 +70,43 @@ public class Configuration {
             "\\?","\\!",
             "\\}","\\{","\\(","\\)","\\[","\\]","<",">",
             "@","#"," "," ");
-        this.ranges = new LinkedList<>();
-        this.operators = new ArrayList<>(Arrays.asList("it.units.inginf.male.tree.operator.Group",
+
+        this.ranges = new FastList<>();
+        this.operators = FastList.newListWith(
+            "it.units.inginf.male.tree.operator.Group",
             "it.units.inginf.male.tree.operator.NonCapturingGroup",
             "it.units.inginf.male.tree.operator.ListMatch",
             "it.units.inginf.male.tree.operator.ListNotMatch",
             "it.units.inginf.male.tree.operator.MatchOneOrMore",
+            //"it.units.inginf.male.tree.operator.MatchOneOrMoreGreedy",
             "it.units.inginf.male.tree.operator.MatchZeroOrMore",
+            //"it.units.inginf.male.tree.operator.MatchZeroOrMoreGreedy",
             "it.units.inginf.male.tree.operator.MatchZeroOrOne",
-            "it.units.inginf.male.tree.operator.MatchMinMax"));
+            //"it.units.inginf.male.tree.operator.MatchZeroOrOneGreedy",
+            "it.units.inginf.male.tree.operator.MatchMinMax"
+            //"it.units.inginf.male.tree.operator.MatchMinMaxGreedy",
+            //"it.units.inginf.male.tree.operator.Backreference",
+            //"it.units.inginf.male.tree.Anchor"
+        );
+
         //Add context wise operators (lookaround)
-        this.operators.addAll(
-                    Arrays.asList("it.units.inginf.male.tree.operator.PositiveLookbehind","it.units.inginf.male.tree.operator.NegativeLookbehind",
-                            "it.units.inginf.male.tree.operator.PositiveLookahead", "it.units.inginf.male.tree.operator.NegativeLookahead"));
+        Collections.addAll(operators,
+            "it.units.inginf.male.tree.operator.PositiveLookbehind",
+            "it.units.inginf.male.tree.operator.NegativeLookbehind",
+            "it.units.inginf.male.tree.operator.PositiveLookahead",
+            "it.units.inginf.male.tree.operator.NegativeLookahead");
         
       
         this.initNodeFactory(); //initNodeFactory also instantiate the NodeFactory object, this decouples the terminalset between threads
+
         List<Leaf> terminalSet = this.nodeFactory.getTerminalSet();
+
         //Add default ranges
-        terminalSet.add(new RegexRange("A-Z"));
-        terminalSet.add(new RegexRange("a-z"));
-        terminalSet.add(new RegexRange("A-Za-z"));
+        Collections.addAll(terminalSet,
+            new RegexRange("A-Z"),
+            new RegexRange("a-z"),
+            new RegexRange("A-Za-z")
+        );
         
         this.evaluator = new CachedTreeEvaluator();
         this.evaluator.setup(Collections.EMPTY_MAP);
@@ -97,6 +114,7 @@ public class Configuration {
         this.outputFolderName = ".";
         
         this.strategyParameters = new HashMap<>();
+
         this.strategyParameters.put("runStrategy","it.units.inginf.male.strategy.impl.SeparateAndConquerStrategy");
         
         this.strategyParameters.put("runStrategy2","it.units.inginf.male.strategy.impl.DiversityElitarismStrategy");
@@ -269,9 +287,9 @@ public class Configuration {
         return operators;
     }
 
-    public void setOperators(List<String> operators) {
-        this.operators = operators;
-    }
+//    public void setOperators(List<String> operators) {
+//        this.operators = operators;
+//    }
 
     public int getJobId() {
         return jobId;

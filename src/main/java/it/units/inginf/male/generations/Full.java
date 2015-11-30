@@ -70,23 +70,25 @@ public class Full implements Generation {
 
     private Node full(int depth) {
         Node _tree = randomFunction();
-        ParentNode tree = (ParentNode)_tree;
-        if (depth >= this.maxDepth - 1) {
+        if (_tree.getMaxChildrenCount() > 0) {
+            ParentNode tree = (ParentNode) _tree;
+            if (depth >= this.maxDepth - 1) {
 
-            for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-                Leaf leaf = randomLeaf();
-                leaf.setParent(tree);
-                tree.add(leaf);
-            }
+                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
+                    Leaf leaf = randomLeaf();
+                    leaf.setParent(tree);
+                    tree.add(leaf);
+                }
 
-        } else {
-            for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-                Node node = full(depth + 1);
-                node.setParent(tree);
-                tree.add(node);
+            } else {
+                for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
+                    Node node = full(depth + 1);
+                    node.setParent(tree);
+                    tree.add(node);
+                }
             }
         }
-        return tree;
+        return _tree;
     }
 
     private final Node randomFunction() {

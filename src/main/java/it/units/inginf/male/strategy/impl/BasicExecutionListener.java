@@ -106,7 +106,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
                 TimeUnit.MILLISECONDS.toMinutes(elapsedMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(elapsedMillis)),
                 TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis)));
         //let's store the current generatin best(fitness) individual performances on validation. remind performances indexes != fintesses 
-        Ranking bestRanking = new Ranking(best, fitness);
+        Ranking bestRanking = new Ranking(-1, best, fitness);
         FinalSolution generationBestSolution = new FinalSolution(bestRanking);
       
         //The learning performance is needed by the checkBestCandidate, commented out from production code

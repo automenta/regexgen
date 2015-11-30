@@ -265,7 +265,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
                     ParentNode finalNode;
                     if(useMinMaxQuantifier){
                         finalNode = new MatchMinMax();
-                        finalNode.add(node, new Constant("1"), new Constant(String.valueOf(repetitions)));
+                        finalNode.add(node, new Constant(1), new Constant(repetitions));
                     } else {
                         finalNode = new MatchOneOrMore();
                         finalNode.add(node);
@@ -288,10 +288,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
                 Node second = nodes.pollFirst();
 
                 if (second != null) {
-                    ParentNode conc = new Concatenator(first, second);
-                    first.setParent(conc);
-                    second.setParent(conc);
-                    tmp.addLast(conc);
+                    tmp.addLast(new Concatenator(first, second));
                 } else {
                     tmp.addLast(first);
                 }

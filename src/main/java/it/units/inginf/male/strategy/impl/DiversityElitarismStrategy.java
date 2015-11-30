@@ -18,6 +18,7 @@
 package it.units.inginf.male.strategy.impl;
 
 import com.gs.collections.api.tuple.Twin;
+import com.gs.collections.impl.set.mutable.UnifiedSet;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.generations.Generation;
 import it.units.inginf.male.generations.Ramped;
@@ -27,10 +28,7 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.utils.UniqueList;
 import it.units.inginf.male.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Optional accepted parameters:
@@ -118,21 +116,24 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
             newPopulation.addAll(population);
         }
 
-        List<Ranking> tmp = buildRankings(newPopulation, objective);
+        //IntObjectHashMap<Ranking> remaining = new IntObjectHashMap(newPopulation.size());
+        UnifiedSet<Ranking> remaining = new UnifiedSet(newPopulation.size());
+        eachRankings(newPopulation, objective, remaining::add);
 
-        rankings.clear();
-        List<Ranking> t = new ArrayList();
-        while (tmp.size() > 0) {
-            t = Utils.getFirstParetoFront(tmp, t);
-            tmp.removeAll(t);
-            sortByFirst(t);
-            rankings.addAll(t);
-        }
+        //while (!remaining.isEmpty()) {
+        int nextPopSize = (int)Math.ceil(remaining.size() * 0.75);
+        while (Utils.getFirstParetoFront(remaining, nextPopSize));
+            //sortByFirst(rankings);
+        //}
 
-        rankings = new ArrayList<>(rankings.subList(0, popSize));
-        population.clear();
+
+        rankings = remaining.toSortedList(RankingComparator);
+//        //rankings = new ArrayList<>(rankings.subList(0, popSize));
+//        System.out.print("after: \t" + rankings.get(0) + " ");
+//        System.out.println(rankings.get(rankings.size()-1));
 
         //Obtain an ordinated (as Rankings are) population
+        population.clear();
         rankings.forEach(rr -> population.add(rr.getTree()));
     }   
 

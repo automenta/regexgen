@@ -33,6 +33,11 @@ public class Constant extends Leaf<String> {
             Arrays.asList("\\w", "\\d", ".", "\\b", "\\s")
     );
 
+    public Constant(int value) {
+        super(String.valueOf(value));
+        charClass = escaped = false;
+    }
+
     public Constant(String value) {
         super(value);
         charClass = allowedClasses.contains(value);

@@ -172,7 +172,8 @@ public class Variation {
     }
 
     private static boolean isNodePickable(Node root, boolean isLeaf) {
-        return root instanceof Leaf == isLeaf && root.getParent() != null;
+        return root instanceof Leaf == isLeaf
+                && root.getParent() != null;
     }
 
     private void replaceNode(Node oldChild, Node newChild) {

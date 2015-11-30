@@ -19,6 +19,8 @@ package it.units.inginf.male.objective;
 
 import it.units.inginf.male.tree.Node;
 
+import java.util.Arrays;
+
 /**
  *
  * @author MaleLabTs
@@ -27,17 +29,24 @@ final public class Ranking {
 
     private final Node tree;
     private final double[] fitness;
+    public final int id;
 
-    public Ranking(Node tree, double[] fitness) {
+    public Ranking(int id, Node tree, double[] fitness) {
         this.tree = tree;
         this.fitness = fitness;
-        
+        this.id = id; //(int)IDFactory.nextID();
     }
 
+    @Override
+    public String toString() {
+        return "{" +
+                tree.getDescription() +
+                "=" + Arrays.toString(fitness) +
+                '}';
+    }
 
-
-    public Ranking(Node tree, Objective objective) {
-        this(tree, objective.fitness(tree));
+    public Ranking(int id, Node tree, Objective objective) {
+        this(id, tree, objective.fitness(tree));
     }
 
     public double[] getFitness() {
@@ -56,8 +65,10 @@ final public class Ranking {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        return tree.equals( ((Ranking)obj ).tree );
+    public final boolean equals(Object obj) {
+        return obj == this;
+
+        //return tree.equals( ((Ranking)obj ).tree );
 //
 //        if (obj == null) {
 //            return false;
@@ -77,7 +88,7 @@ final public class Ranking {
 
     @Override
     public int hashCode() {
-        return tree.hashCode();
+        return id; //tree.hashCode();
 //        int hash = 5;
 //        hash = 97 * hash + (this.tree != null ? this.tree.hashCode() : 0);
 //        return hash;

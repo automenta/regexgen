@@ -19,23 +19,13 @@ package it.units.inginf.male.strategy.impl;
 
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.evaluators.TreeEvaluationException;
-import it.units.inginf.male.generations.Generation;
-import it.units.inginf.male.generations.InitialPopulationBuilder;
-import it.units.inginf.male.generations.Ramped;
 import it.units.inginf.male.objective.Objective;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.objective.performance.PerformacesObjective;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.operator.Or;
-import it.units.inginf.male.utils.Utils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * Optional accepted parameters: "terminationCriteria", Boolean, then True the
@@ -89,21 +79,23 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
 
     private void initialize() {
-        int targetPopSize = param.getPopulationSize();
-        this.rankings.clear();
+        throw new RuntimeException("share the impl from DiversityElitismStrategy");
 
-        InitialPopulationBuilder populationBuilder = context.getConfiguration().getPopulationBuilder();
-        this.population = populationBuilder.init(this.context);
-        this.context.getConfiguration().getTerminalSetBuilder().setup(this.context);
-        Generation ramped = new Ramped(this.maxDepth, this.context);
-        this.population.addAll(ramped.generate(targetPopSize - population.size()));
-        List<Ranking> tmp = buildRankings(population, objective);
-        while (tmp.size() > 0) {
-            List<Ranking> t = Utils.getFirstParetoFront(tmp);
-            tmp.removeAll(t);
-            sortByFirst(t);
-            this.rankings.addAll(t);
-        }     
+//        int targetPopSize = param.getPopulationSize();
+//        this.rankings.clear();
+//
+//        InitialPopulationBuilder populationBuilder = context.getConfiguration().getPopulationBuilder();
+//        this.population = populationBuilder.init(this.context);
+//        this.context.getConfiguration().getTerminalSetBuilder().setup(this.context);
+//        Generation ramped = new Ramped(this.maxDepth, this.context);
+//        this.population.addAll(ramped.generate(targetPopSize - population.size()));
+//        List<Ranking> tmp = buildRankings(population, objective);
+//        while (tmp.size() > 0) {
+//            List<Ranking> t = Utils.getFirstParetoFront(tmp);
+//            tmp.removeAll(t);
+//            sortByFirst(t);
+//            this.rankings.addAll(t);
+//        }
     }
 
     @Override
@@ -239,10 +231,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 Node second = nodes.pollFirst();
 
                 if (second != null) {
-                    Or or = new Or(first, second);
-                    first.setParent(or);
-                    second.setParent(or);
-                    tmp.addLast(or);
+                    tmp.addLast(new Or(first, second));
                 } else {
                     tmp.addLast(first);
                 }

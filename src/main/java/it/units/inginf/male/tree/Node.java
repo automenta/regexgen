@@ -48,6 +48,12 @@ public abstract class Node {
         return Utils.i(toString(), ifMissing);
     }
 
+    public String getDescription() {
+        StringBuilder sb;
+        describe(sb = new StringBuilder());
+        return sb.toString();
+    }
+
 
     public static enum RegexFlavour {
         JAVA,
