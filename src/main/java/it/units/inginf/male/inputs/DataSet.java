@@ -51,7 +51,7 @@ public class DataSet {
     public String name;
     public String description;
     public String regexTarget;
-    public List<Example> examples = new LinkedList<>();
+    public List<Example> examples = new ArrayList<>();
     
     private transient int numberMatches;
     private transient int numberUnmatches;
@@ -231,10 +231,13 @@ public class DataSet {
      * @return
     */
         protected static List<Example> stripeExample(Example example, double marginSize){     
-        List<Example> slicesExampleList = new LinkedList<>();    
+        List<Example> slicesExampleList = new ArrayList<>();
         //create ranges covering the saved portions 
-        List<Bounds> savedBounds = new LinkedList<>();
-        for(Bounds match : example.getMatch()){
+
+        List<Bounds> mm = example.getMatch();
+        List<Bounds> savedBounds = new ArrayList<>(mm.size());
+
+        for(Bounds match : mm){
             //double -> int cast works like Math.floor(); Gives the same results of the older integer version
             int charMargin = (int) Math.max(((match.size() * marginSize) / 2.0),1.0);
             Bounds grownMatch = new Bounds(match.start - charMargin, match.end + charMargin);
@@ -252,7 +255,7 @@ public class DataSet {
             sliceExample.setString(example.getString().substring(slice.start, slice.end));
             
             //find owned matches
-            for(Bounds match : example.getMatch()){
+            for(Bounds match : mm){
                 if(match.start >= slice.end){
                     break; //only the internal for
                 } else {
@@ -407,7 +410,7 @@ public class DataSet {
     //When convertToUnmatch is true extracted matches are converted into unannotated. 
     private Example manipulateSeparateAndConquerExample(Example example, Matcher individualRegexMatcher, boolean convertToUnmatch){
         Example exampleClone = new Example(example);
-        List<Bounds> extractions = new LinkedList<>();
+        List<Bounds> extractions = new ArrayList<>();
         try {
             Matcher m = individualRegexMatcher.reset(example.getString());
             while (m.find()) {
@@ -485,7 +488,7 @@ public class DataSet {
         if (this.separateAndConquerLevels.containsKey(jobId)){
             return this.separateAndConquerLevels.get(jobId);
         } else {
-            List<DataSet> newDatasetList = new LinkedList<>();
+            List<DataSet> newDatasetList = new ArrayList<>();
             this.separateAndConquerLevels.put(jobId, newDatasetList);
             return newDatasetList;
         }
@@ -527,21 +530,21 @@ public class DataSet {
         
         public Example(Example example) {
             this.string = example.string;
-            this.match= new LinkedList<>(example.match);
-            this.unmatch = new LinkedList<>(example.unmatch);
+            this.match= new ArrayList<>(example.match);
+            this.unmatch = new ArrayList<>(example.unmatch);
             if(example.matchedStrings!=null){
-                this.matchedStrings = new LinkedList<>(example.matchedStrings);
+                this.matchedStrings = new ArrayList<>(example.matchedStrings);
             }
             if(example.unmatchedStrings!=null){
-                this.unmatchedStrings = new LinkedList<>(example.unmatchedStrings);
+                this.unmatchedStrings = new ArrayList<>(example.unmatchedStrings);
         }
         }
         
         public String string;
-        public List<Bounds> match = new LinkedList<>();
-        public List<Bounds> unmatch = new LinkedList<>();
-        transient protected List<String> matchedStrings = new LinkedList<>();
-        transient protected List<String> unmatchedStrings = new LinkedList<>();
+        public List<Bounds> match = new ArrayList<>();
+        public List<Bounds> unmatch = new ArrayList<>();
+        transient protected List<String> matchedStrings = new ArrayList<>();
+        transient protected List<String> unmatchedStrings = new ArrayList<>();
 
         public void addMatchBounds(int bs, int bf) {
             Bounds boundaries = new Bounds(bs, bf);
@@ -642,7 +645,7 @@ public class DataSet {
          * @return a list of all annotated strings
          */
         public List<String> getAnnotatedStrings(){
-            List<String> annotatedStrings = new LinkedList<>();
+            List<String> annotatedStrings = new ArrayList<>();
             for(Bounds bounds : this.getMatch()){
                 annotatedStrings.add(this.getString().substring(bounds.start, bounds.end));
             }
@@ -659,10 +662,10 @@ public class DataSet {
          * @return
          */
         public List<String> getOrderedAnnotatedStrings(){
-            List<Bounds> boundsList = new LinkedList<>(this.getMatch());
+            List<Bounds> boundsList = new ArrayList<>(this.getMatch());
             boundsList.addAll(this.getUnmatch());
             Collections.sort(boundsList);  
-            List<String> annotatedStrings = new LinkedList<>();
+            List<String> annotatedStrings = new ArrayList<>(boundsList.size());
             for(Bounds bounds : boundsList){
                 annotatedStrings.add(this.getString().substring(bounds.start, bounds.end));
     }
@@ -676,14 +679,15 @@ public class DataSet {
         
     }
     
-    static public class Bounds implements Comparable<Bounds>{
+    static public final class Bounds implements Comparable<Bounds>{
+        public int start;
+        public int end;
+
         public Bounds(int start, int end) {
             this.start = start;
             this.end = end;
         }
-        public int start;
-        public int end;
-        
+
         public int size(){
             return ( this.end - this.start );
         };
@@ -698,12 +702,7 @@ public class DataSet {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
+            if (!(obj instanceof Bounds)) return false;
             final Bounds other = (Bounds) obj;
             return ((this.end == other.end)&&(this.start == other.start));
         }
@@ -715,7 +714,7 @@ public class DataSet {
          * @return
          */
         static public List<Bounds> mergeBounds(List<Bounds> boundsList){
-            List<Bounds> newBoundsList = new LinkedList<>();
+            List<Bounds> newBoundsList = new ArrayList<>();
             if(boundsList.isEmpty()){
                 return newBoundsList;
             }

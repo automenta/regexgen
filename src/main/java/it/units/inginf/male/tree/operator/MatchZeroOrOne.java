@@ -29,7 +29,7 @@ public class MatchZeroOrOne extends Quantifier {
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         StringBuilder tmp = new StringBuilder();
-        Node child = getChildrens().get(0);
+        Node child = children().get(0);
         // Bisogna contare subito il gruppo
         int index = context.incGroups();
         child.describe(tmp, context, flavour);

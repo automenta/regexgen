@@ -34,12 +34,9 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.utils.Pair;
 import it.units.inginf.male.utils.Utils;
 import it.units.inginf.male.variations.Variation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Implements the default evolution strategy, termination criteria can be enabled thru parameters.  
@@ -53,7 +50,7 @@ public class DefaultStrategy implements RunStrategy {
     protected Context context;
     protected int maxDepth;
     protected List<Node> population;
-    protected List<Ranking> rankings = new LinkedList<>();
+    protected List<Ranking> rankings = new ArrayList<>();
     protected Selection selection;
     protected Objective objective;
     protected Variation variation;
@@ -100,32 +97,42 @@ public class DefaultStrategy implements RunStrategy {
         try {
             int generation;
             listener.evolutionStarted(this);
-            InitialPopulationBuilder populationBuilder = context.getConfiguration().getPopulationBuilder();
-            this.population = populationBuilder.init();
+
+            Context ctx = this.context;
+
+            InitialPopulationBuilder populationBuilder = ctx.getConfiguration().getPopulationBuilder();
+
+            population = populationBuilder.init();
             Generation ramped = new Ramped(this.maxDepth, this.context);
-            this.population.addAll(ramped.generate(param.getPopulationSize() - population.size()));
-            List<Ranking> tmp = buildRankings(population, objective);
-            while (tmp.size() > 0) {
-                List<Ranking> t = Utils.getFirstParetoFront(tmp);
-                tmp.removeAll(t);
-                sortByFirst(t);
-                this.rankings.addAll(t);
+            population.addAll(ramped.generate(param.getPopulationSize() - this.population.size()));
+
+            {
+                Set<Ranking> tmp = new HashSet(); //buildRankings(population, objective);
+                eachRankings(this.population, objective, tmp::add);
+                while (tmp.size() > 0) {
+                    List<Ranking> t = Utils.getFirstParetoFront(tmp);
+                    tmp.removeAll(t);
+                    sortByFirst(t);
+                    rankings.addAll(t);
+                }
             }
             //Variables for termination criteria
             String oldGenerationBestValue = null;
             int terminationCriteriaGenerationsCounter = 0;
             int doneGenerations = 0;
+
             for (generation = 0; generation < param.getGenerations(); generation++) {
-                context.setStripedPhase(context.getDataSetContainer().isDataSetStriped() && ((generation % context.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
+                ctx.setStripedPhase(ctx.getDataSetContainer().isDataSetStriped() && ((generation % ctx.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 
                 evolve();
+
                 Ranking best = rankings.get(0);
                 doneGenerations = generation + 1;
                 if (listener != null) {
-                    listener.logGeneration(this, doneGenerations, best.getTree(), best.getFitness(), this.rankings);
+                    listener.logGeneration(this, doneGenerations, best.getTree(), best.getFitness(), rankings);
                 }
                 boolean allPerfect = true;
-                for (double fitness : this.rankings.get(0).getFitness()) {
+                for (double fitness : rankings.get(0).getFitness()) {
                     if (Math.round(fitness * 10000) != 0) {
                         allPerfect = false;
                         break;
@@ -156,7 +163,7 @@ public class DefaultStrategy implements RunStrategy {
 
             //now generation value is already last generation + 1, no reason to add +1
             if (listener != null) {
-                listener.evolutionComplete(this, doneGenerations, this.rankings);
+                listener.evolutionComplete(this, doneGenerations, rankings);
             }
             return null;
         } catch (Throwable x) {
@@ -225,13 +232,16 @@ public class DefaultStrategy implements RunStrategy {
         }
     }
 
-    protected List<Ranking> buildRankings(List<Node> population, Objective objective) {
+    protected static List<Ranking> buildRankings(List<Node> population, Objective objective) {
         List<Ranking> result = new ArrayList<>(population.size());
-        for (Node tree : population) {
-            double fitness[] = objective.fitness(tree);
-            result.add(new Ranking(tree, fitness));
-        }
+        eachRankings(population, objective, result::add);
         return result;
+    }
+
+    protected static void eachRankings(List<Node> population, Objective objective, Consumer<Ranking> each) {
+        population.forEach(tree ->
+            each.accept(new Ranking(tree, objective))
+        );
     }
 
     @Override
@@ -254,14 +264,19 @@ public class DefaultStrategy implements RunStrategy {
     }
 
     final static Comparator<Ranking> RankingComparator = new Comparator<Ranking>() {
-        @Override
-        public int compare(Ranking o1, Ranking o2) {
+
+        @Override public int compare(Ranking o1, Ranking o2) {
+            if (o1 == o2) return 0;
+
             Double fitness1 = o1.getFitness()[0];
             Double fitness2 = o2.getFitness()[0];
             int result = Double.compare(fitness1, fitness2);
-            if (result == 0) {
-                return o1.getDescription().compareTo(o2.getDescription());
-        }
+
+//            if (result == 0) {
+//                return o1.getDescription().
+//                        compareTo(o2.getDescription());
+//            }
+
             return result;
         }
     };

@@ -115,7 +115,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         Node letters;
         if(useWordClasses){
             letters = new ListMatch();
-            letters.getChildrens().add(new RegexRange("A-Za-z"));
+            letters.children().add(new RegexRange("A-Za-z"));
         } else {
             letters = new Constant(".");
         }
@@ -161,7 +161,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
                 }    
                 if(isRepeat){
                     Node finalNode = new MatchOneOrMore();
-                    finalNode.getChildrens().add(node);
+                    finalNode.children().add(node);
                     node = finalNode;
                 }
                 newNodes.add(node);                
@@ -176,9 +176,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
                 Node second = nodes.pollFirst();
 
                 if (second != null) {
-                    Node conc = new Concatenator();
-                    conc.getChildrens().add(first);
-                    conc.getChildrens().add(second);
+                    Concatenator conc = new Concatenator(first, second);
                     first.setParent(conc);
                     second.setParent(conc);
                     tmp.addLast(conc);

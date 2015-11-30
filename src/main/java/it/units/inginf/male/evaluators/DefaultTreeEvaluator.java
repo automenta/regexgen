@@ -18,13 +18,12 @@
 package it.units.inginf.male.evaluators;
 
 import it.units.inginf.male.inputs.Context;
-import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.inputs.DataSet.Example;
 import it.units.inginf.male.tree.Node;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -50,35 +49,34 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
             Pattern regex = Pattern.compile(sb.toString());
             Matcher matcher = regex.matcher("");
 
-            int i = 0;
-            DataSet dataSet = context.getCurrentDataSet();
-            for (Example example : dataSet.getExamples()) {
-                try {
-                    Matcher m = matcher.reset(example.getString());
-                    List<Bounds> b = new LinkedList<>();
-                    while (m.find()) {
-                        Bounds bounds = new Bounds(matcher.start(0), matcher.end(0));
-                        b.add(bounds);
-
-                    }
-                    results.add(b);
-                } catch (StringIndexOutOfBoundsException ex) {
-                    /**
-                     * Workaround: ref BUG: 6984178
-                     * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6984178
-                     * with greedy quantifiers returns exception 
-                     * instead than "false".
-                     */
-                    results.add(Collections.<Bounds>emptyList());
-                }
-
-                i++;
-            }
+            context.getCurrentDataSet().
+                getExamples().
+                    forEach(e ->
+                        eval(results, matcher, e));
 
         } catch (PatternSyntaxException ex) {
             throw new TreeEvaluationException(ex);
         }
         return results;
+    }
+
+    private void eval(List<List<Bounds>> results, Matcher matcher, Example example) {
+        try {
+            Matcher m = matcher.reset(example.getString());
+            List<Bounds> b = new ArrayList<>();
+            while (m.find()) {
+                b.add(new Bounds(matcher.start(0), matcher.end(0)));
+            }
+            results.add(b);
+        } catch (StringIndexOutOfBoundsException ex) {
+            /**
+             * Workaround: ref BUG: 6984178
+             * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6984178
+             * with greedy quantifiers returns exception
+             * instead than "false".
+             */
+            results.add(Collections.<Bounds>emptyList());
+        }
     }
 
     @Override

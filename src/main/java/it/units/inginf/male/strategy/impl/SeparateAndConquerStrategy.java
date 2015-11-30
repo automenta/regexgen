@@ -239,9 +239,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 Node second = nodes.pollFirst();
 
                 if (second != null) {
-                    Node or = new Or();
-                    or.getChildrens().add(first);
-                    or.getChildrens().add(second);
+                    Or or = new Or(first, second);
                     first.setParent(or);
                     second.setParent(or);
                     tmp.addLast(or);

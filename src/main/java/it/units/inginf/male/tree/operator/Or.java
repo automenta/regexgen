@@ -18,12 +18,21 @@
 package it.units.inginf.male.tree.operator;
 
 import it.units.inginf.male.tree.DescriptionContext;
+import it.units.inginf.male.tree.Node;
 
 /**
  *
  * @author MaleLabTs
  */
 public class Or extends BinaryOperator {
+
+    public Or() {
+        super();
+    }
+
+    public Or(Node first, Node second) {
+        super(first, second);
+    }
 
     @Override
     protected BinaryOperator buildCopy() {

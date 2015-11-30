@@ -17,17 +17,28 @@
  */
 package it.units.inginf.male.tree.operator;
 
-import it.units.inginf.male.tree.AbstractNode;
+import com.gs.collections.impl.factory.Lists;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author MaleLabTs
  */
-public abstract class BinaryOperator extends AbstractNode {
+public abstract class BinaryOperator extends ParentNode {
 
-    private Node parent;
+
+
+    public BinaryOperator() {
+        super(new ArrayList(2));
+    }
+
+    public BinaryOperator(Node a, Node b) {
+        super(Lists.mutable.of(a,b));
+    }
 
     @Override
     public int getMinChildrenCount() {
@@ -39,35 +50,30 @@ public abstract class BinaryOperator extends AbstractNode {
         return 2;
     }
 
-    public Node getLeft() {
-        return getChildrens().get(0);
+    public final Node getLeft() {
+        return children().get(0);
     }
 
-    public Node getRight() {
-        return getChildrens().get(1);
+    public final Node getRight() {
+        return children().get(1);
     }    
 
     @Override
     public Node cloneTree() {
         BinaryOperator bop = buildCopy();
-        List<Node> bopChilds = bop.getChildrens();
-        for(Node child:this.getChildrens()){
-            Node newChild = child.cloneTree();
-            newChild.setParent(bop);
-            bopChilds.add(newChild);
+
+        List<Node> ch = this.children();
+        if (ch.size() >= 2) {
+            List<Node> bopChilds = bop.children();
+            cloneChild(ch.get(0), bop);
+            cloneChild(ch.get(1), bop);
         }
+        bop.unhash();
         return bop;
     }
 
-    @Override
-    public Node getParent() {
-        return parent;
-    }
 
-    @Override
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
+
     
     protected abstract  BinaryOperator buildCopy();
 

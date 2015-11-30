@@ -23,10 +23,9 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author MaleLabTs
  */
-public class IDFactory {
+public class IDFactory extends AtomicLong {
 
-   private static final IDFactory instance = new IDFactory();
-    private final AtomicLong id = new AtomicLong();
+    public static final AtomicLong id = new AtomicLong();
 
     private IDFactory() {
     }
@@ -35,11 +34,8 @@ public class IDFactory {
      * This method return a new unique ID to identificate individuals
      * @return the ID
      */
-    public long nextID(){
+    public static long nextID(){
         return id.getAndIncrement();
     }
 
-    public static IDFactory getInstance(){
-        return instance;
-    }
 }

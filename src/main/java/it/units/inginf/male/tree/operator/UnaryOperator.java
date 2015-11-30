@@ -18,48 +18,65 @@
 package it.units.inginf.male.tree.operator;
 
 
-import it.units.inginf.male.tree.AbstractNode;
+import com.gs.collections.impl.factory.Lists;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  *
  * @author MaleLabTs
  */
-public abstract class UnaryOperator extends AbstractNode {
+public abstract class UnaryOperator extends ParentNode {
 
     private Node parent;
 
+    public UnaryOperator() {
+        super(new ArrayList(1));
+    }
+
+    public UnaryOperator(Node child) {
+        super(Lists.mutable.of(child));
+    }
+
     @Override
-    public int getMinChildrenCount() {
+    public final int getMinChildrenCount() {
         return 1;
     }
 
     @Override
-    public int getMaxChildrenCount() {
+    public final int getMaxChildrenCount() {
         return 1;
     }       
 
+//    @Override
+//    public Node cloneTree() {
+//        UnaryOperator clone = buildCopy();
+//        List<Node> ch = children();
+//        if (!ch.isEmpty()) {
+//            Node child = ch.get(0).cloneTree();
+//            child.setParent(clone);
+//            clone.children().add(child);
+//        }
+//        return clone;
+//    }
     @Override
     public Node cloneTree() {
-        UnaryOperator clone = buildCopy();
-        if (!getChildrens().isEmpty()) {
-            Node child = getChildrens().get(0).cloneTree();
-            child.setParent(clone);
-            clone.getChildrens().add(child);
+        UnaryOperator bop = buildCopy();
+
+        List<Node> ch = this.children();
+        if (!ch.isEmpty()) {
+            List<Node> bopChilds = bop.children();
+            cloneChild(ch.get(0), bop);
         }
-        return clone;
+        bop.unhash();
+        return bop;
     }
 
-    @Override
-    public Node getParent() {
-        return parent;
-    }
 
-    @Override
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
    
     protected abstract UnaryOperator buildCopy();  
 

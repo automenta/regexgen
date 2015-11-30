@@ -24,16 +24,13 @@ import it.units.inginf.male.inputs.DataSet.Example;
 import it.units.inginf.male.terminalsets.TokenizedContextTerminalSetBuilder;
 import it.units.inginf.male.tree.Constant;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
 import it.units.inginf.male.tree.RegexRange;
-import it.units.inginf.male.tree.operator.Concatenator;
-import it.units.inginf.male.tree.operator.ListMatch;
-import it.units.inginf.male.tree.operator.MatchMinMax;
-import it.units.inginf.male.tree.operator.MatchOneOrMore;
-import it.units.inginf.male.tree.operator.PositiveLookahead;
-import it.units.inginf.male.tree.operator.PositiveLookbehind;
+import it.units.inginf.male.tree.operator.*;
 import it.units.inginf.male.utils.BasicTokenizer;
 import it.units.inginf.male.utils.Tokenizer;
 import it.units.inginf.male.utils.Utils;
+
 import java.util.*;
 
 /**
@@ -191,23 +188,26 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         
         Node finalIndividual = matchNode;
         if(postUnmatchNode!=null){
-            Node finalIndividualTemp = new Concatenator();
-            finalIndividualTemp.getChildrens().add(matchNode);
-            Node positiveLookAhead = new PositiveLookahead();
-            positiveLookAhead.getChildrens().add(postUnmatchNode);
-            finalIndividualTemp.getChildrens().add(positiveLookAhead);
+            ParentNode finalIndividualTemp = new Concatenator();
+            finalIndividualTemp.add(matchNode);
+            ParentNode positiveLookAhead = new PositiveLookahead();
+            positiveLookAhead.add(postUnmatchNode);
+            finalIndividualTemp.add(positiveLookAhead);
             finalIndividual = finalIndividualTemp;
         }
         if(preUnmatchNode!=null){
-            Node finalIndividualTemp = new Concatenator();
-            Node positiveLookBehind = new PositiveLookbehind();
-            positiveLookBehind.getChildrens().add(preUnmatchNode);
-            finalIndividualTemp.getChildrens().add(positiveLookBehind);
-            finalIndividualTemp.getChildrens().add(finalIndividual);
+            ParentNode finalIndividualTemp = new Concatenator();
+            ParentNode positiveLookBehind = new PositiveLookbehind();
+            positiveLookBehind.add(preUnmatchNode);
+            finalIndividualTemp.add(positiveLookBehind);
+            finalIndividualTemp.add(finalIndividual);
             finalIndividual = finalIndividualTemp;
         }
         return finalIndividual;
     }
+
+    static final String w = "\\w";
+    static final String d = "\\d";
     
     //Create a simple individual from a tokenized (splitted) version (list of strings). Only winnerTokens are preserved.
     private Node createIndividualFromTokenizedString(List<String> tokenizedString, Map<String,Double> winnerTokens, boolean compact, boolean useMinMaxQuantifier){
@@ -215,10 +215,9 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         Deque<Node> nodes = new LinkedList<>();
         Deque<Node> tmp = new LinkedList<>();
 
-        String w = "\\w";
-        String d = "\\d";
-        Node letters = new ListMatch();
-        letters.getChildrens().add(new RegexRange("A-Za-z"));
+
+        ParentNode letters = new ListMatch();
+        letters.add(new RegexRange("A-Za-z"));
         
         for(String token : tokenizedString){
             if(winnerTokens.containsKey(token)){
@@ -249,7 +248,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
                 nodeValue = node.toString();
                 boolean isRepeat = false;
                 int repetitions = 1;
-                while (nodes.size()>0){
+                while (!nodes.isEmpty()){
                     Node next = nodes.peek();
                     nextValue = next.toString();
                      
@@ -264,15 +263,13 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
                     } 
                 }    
                 if(isRepeat){
-                    Node finalNode = null;
+                    ParentNode finalNode;
                     if(useMinMaxQuantifier){
                         finalNode = new MatchMinMax();
-                        finalNode.getChildrens().add(node);
-                        finalNode.getChildrens().add(new Constant("1"));
-                        finalNode.getChildrens().add(new Constant(String.valueOf(repetitions)));
+                        finalNode.add(node, new Constant("1"), new Constant(String.valueOf(repetitions)));
                     } else {
                         finalNode = new MatchOneOrMore();
-                        finalNode.getChildrens().add(node);
+                        finalNode.add(node);
                         
                     }
                     node = finalNode;
@@ -292,9 +289,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
                 Node second = nodes.pollFirst();
 
                 if (second != null) {
-                    Node conc = new Concatenator();
-                    conc.getChildrens().add(first);
-                    conc.getChildrens().add(second);
+                    ParentNode conc = new Concatenator(first, second);
                     first.setParent(conc);
                     second.setParent(conc);
                     tmp.addLast(conc);

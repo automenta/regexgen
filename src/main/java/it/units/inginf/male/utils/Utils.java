@@ -21,23 +21,9 @@ import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.tree.RegexRange;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,20 +44,52 @@ public class Utils {
     }
 
     /**
-     * fast parse an int under certain conditions, avoiding Integer.parse if possible
+     * fast parse a non-negative int under certain conditions, avoiding Integer.parse if possible
+     *
      */
-    public static int i(final String s) {
-        if (s.length() == 1) {
-            char c = s.charAt(0);
-            int i = i(c);
-            if (i != -1) return i;
-        } else if (s.length() == 2) {
-            int dig1 = i(s.charAt(1));
-            int dig10 = i(s.charAt(0));
-            if ((dig1 != -1) && (dig10 != -1))
-                return dig10 * 10 + dig1;
+    public static int i(final String s, int ifMissing) {
+        switch (s.length()) {
+            case 0: return ifMissing;
+            case 1: return i1(s, ifMissing);
+            case 2: return i2(s, ifMissing);
+            case 3: return i3(s, ifMissing);
+            default:
+                try {
+                    return Integer.parseInt(s);
+                }
+                catch (NumberFormatException e) {
+                    return ifMissing;
+                }
         }
-        return Integer.parseInt(s);
+    }
+
+    private static int i3(String s, int ifMissing) {
+        int dig100 = i(s.charAt(0));
+        if (dig100 == -1) return ifMissing;
+
+        int dig10 = i(s.charAt(1));
+        if (dig10 == -1) return ifMissing;
+
+        int dig1 = i(s.charAt(2));
+        if (dig1 == -1) return ifMissing;
+
+        return dig100 * 100 + dig10 * 10 + dig1;
+    }
+
+    private static int i2(String s, int ifMissing) {
+        int dig10 = i(s.charAt(0));
+        if (dig10 == -1) return ifMissing;
+
+        int dig1 = i(s.charAt(1));
+        if (dig1 == -1) return ifMissing;
+
+        return dig10 * 10 + dig1;
+    }
+
+    private static int i1(String s, int ifMissing) {
+        int dig1 = i(s.charAt(0));
+        if (dig1 != -1) return ifMissing;
+        return dig1;
     }
 
     public static float[] calculateMeanFitness(List<Ranking> population) {
@@ -91,29 +109,46 @@ public class Utils {
     public static boolean isAParetoDominateByB(double fitnessA[], double fitnessB[]) {
         boolean dominate = false;
         for (int i = 0; i < fitnessA.length; i++) {
-            if (fitnessA[i] > fitnessB[i]) {
+            double a = fitnessA[i];
+            double b = fitnessB[i];
+            if (a > b) {
                 dominate = true;
-            } else if (fitnessA[i] < fitnessB[i]) {
+            } else if (a < b) {
                 return false;
             }
         }
         return dominate;
     }
 
-    public static List<Ranking> getFirstParetoFront(List<Ranking> tmp) {
-        List<Ranking> front = new LinkedList<>();
+//    public static void getFirstParetoFront(List<Ranking> tmp, Consumer<Ranking> each) {
+//
+//    }
+
+    public static List<Ranking> getFirstParetoFront(Collection<Ranking> tmp) {
+        List<Ranking> front = new ArrayList();
+        return getFirstParetoFront(tmp, front);
+    }
+
+    public static List<Ranking> getFirstParetoFront(Collection<Ranking> itmp, List<Ranking> front) {
+
+        Ranking[] tmp = itmp.toArray(new Ranking[itmp.size()]);
 
         for (Ranking r1 : tmp) {
+
             boolean isDominate = false;
+
+            final double[] f1 = r1.getFitness();
+
             for (Ranking r2 : tmp) {
-                if (r1.equals(r2)) {
-                    continue;
-                }
-                if (Utils.isAParetoDominateByB(r1.getFitness(), r2.getFitness())) {
+
+                if (r1 == r2) /* (r1.equals(r2)) */ continue;
+
+                if (Utils.isAParetoDominateByB(f1, r2.getFitness())) {
                     isDominate = true;
                     break;
                 }
             }
+
             if (!isDominate) {
                 front.add(r1);
             }

@@ -23,6 +23,7 @@ import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Example;
 import it.units.inginf.male.tree.Constant;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
 import it.units.inginf.male.tree.RegexRange;
 import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.ListMatch;
@@ -30,6 +31,7 @@ import it.units.inginf.male.tree.operator.MatchOneOrMore;
 import it.units.inginf.male.utils.BasicTokenizer;
 import it.units.inginf.male.utils.Tokenizer;
 import it.units.inginf.male.utils.Utils;
+
 import java.util.*;
 
 /**
@@ -145,8 +147,8 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
         String w = "\\w";
         String d = "\\d";
-        Node letters = new ListMatch();
-        letters.getChildrens().add(new RegexRange("A-Za-z"));
+        ParentNode letters = new ListMatch(new RegexRange("A-Za-z"));
+
         //winner tokens are added with no modifications(only escaped), other parts are converted to classes or escaped
          
         for(String token : tokenizedString){
@@ -173,11 +175,13 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
             String nextValue;
             //do compact
             
-            while (nodes.size()>0) {
+            while (!nodes.isEmpty()) {
+
                 Node node = nodes.pollFirst();
                 nodeValue = node.toString();
                 boolean isRepeat = false;
-                while (nodes.size()>0){
+
+                while (!nodes.isEmpty()){
                     Node next = nodes.peek();
                     nextValue = next.toString();
                      
@@ -191,9 +195,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
                     } 
                 }    
                 if(isRepeat){
-                    Node finalNode = new MatchOneOrMore();
-                    finalNode.getChildrens().add(node);
-                    node = finalNode;
+                    node = new MatchOneOrMore(node);
                 }
                 newNodes.add(node);                
             }
@@ -210,9 +212,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
                 Node second = nodes.pollFirst();
 
                 if (second != null) {
-                    Node conc = new Concatenator();
-                    conc.getChildrens().add(first);
-                    conc.getChildrens().add(second);
+                    Concatenator conc = new Concatenator(first, second);
                     first.setParent(conc);
                     second.setParent(conc);
                     tmp.addLast(conc);

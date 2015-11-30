@@ -17,59 +17,69 @@
  */
 package it.units.inginf.male.tree.operator;
 
-import it.units.inginf.male.tree.AbstractNode;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  * @author MaleLabTs
  */
-public abstract class TernaryOperator extends AbstractNode{
+public abstract class TernaryOperator extends ParentNode {
     private Node parent;
+
+    public TernaryOperator() {
+        super(new ArrayList(3));
+    }
+
+//    @Override
+//    public Node cloneTree() {
+//        TernaryOperator top = buildCopy();
+//        List<Node> topChilds = top.children();
+//        for(Node child:this.children()){
+//            Node newChild = child.cloneTree();
+//            newChild.setParent(top);
+//            topChilds.add(newChild);
+//        }
+//        return top;
+//    }
 
     @Override
     public Node cloneTree() {
-        TernaryOperator top = buildCopy();
-        List<Node> topChilds = top.getChildrens();
-        for(Node child:this.getChildrens()){
-            Node newChild = child.cloneTree();
-            newChild.setParent(top);
-            topChilds.add(newChild);
+        TernaryOperator bop = buildCopy();
+        List<Node> ch = this.children();
+        if (ch.size() >= 3) {
+            List<Node> bopChilds = bop.children();
+            cloneChild(ch.get(0), bop);
+            cloneChild(ch.get(1), bop);
+            cloneChild(ch.get(2), bop);
         }
-        return top;
+        bop.unhash();
+        return bop;
     }
 
     @Override
-    public Node getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(Node parent) {
-        this.parent=parent;
-    }
-
-    @Override
-    public int getMinChildrenCount() {
+    public final int getMinChildrenCount() {
         return 3;
     }
 
     @Override
-    public int getMaxChildrenCount() {
+    public final int getMaxChildrenCount() {
         return 3;
     }
     
-    public Node getFirst() {
-        return getChildrens().get(0);
+    public final Node getFirst() {
+        return children().get(0);
     }
 
-    public Node getSecond() {
-        return getChildrens().get(1);
+    public final Node getSecond() {
+        return children().get(1);
     } 
     
-    public Node getThird() {
-        return getChildrens().get(2);
+    public final Node getThird() {
+        return children().get(2);
     }
     
     protected abstract  TernaryOperator buildCopy();

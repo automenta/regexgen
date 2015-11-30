@@ -21,6 +21,7 @@ import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.tree.Leaf;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.NodeFactory;
+import it.units.inginf.male.tree.ParentNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,20 +69,21 @@ public class Full implements Generation {
     }
 
     private Node full(int depth) {
-        Node tree = randomFunction();
+        Node _tree = randomFunction();
+        ParentNode tree = (ParentNode)_tree;
         if (depth >= this.maxDepth - 1) {
 
             for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
                 Leaf leaf = randomLeaf();
                 leaf.setParent(tree);
-                tree.getChildrens().add(leaf);
+                tree.add(leaf);
             }
 
         } else {
             for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
                 Node node = full(depth + 1);
                 node.setParent(tree);
-                tree.getChildrens().add(node);
+                tree.add(node);
             }
         }
         return tree;

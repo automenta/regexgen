@@ -21,13 +21,13 @@ import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.generations.Generation;
 import it.units.inginf.male.generations.Ramped;
 import it.units.inginf.male.objective.Ranking;
+import it.units.inginf.male.selections.Selection;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.utils.Pair;
 import it.units.inginf.male.utils.UniqueList;
 import it.units.inginf.male.utils.Utils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 /**
  * Optional accepted parameters:
@@ -57,6 +57,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
     protected void evolve() {
         int popSize = population.size();
         int oldPopSize = (int) (popSize * 0.9); //oldPopsize are the number of individuals generated from the older population
+
         List<Node> newPopulation = new UniqueList<>(popSize);
         
         if(deepDiversity){
@@ -77,26 +78,31 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
 
         
         int stepPopSize = deepDiversity? popSize+oldPopSize : oldPopSize;
-        
+
+        Random rng = context.getRandom();
+        float crossoverProb = param.getCrossoverProbability();
+        Selection sel = this.selection;
+        List<Ranking> r = this.rankings;
+
         while (newPopulation.size() < stepPopSize) {
 
-            double random = context.getRandom().nextDouble();
+            double random = rng.nextDouble();
 
-            if (random <= param.getCrossoverProbability() && oldPopSize - newPopulation.size() >= 2) {
-                Node selectedA = selection.select(rankings);
-                Node selectedB = selection.select(rankings);
+            if (random <= crossoverProb && oldPopSize - newPopulation.size() >= 2) {
+                Node selectedA = sel.select(r);
+                Node selectedB = sel.select(r);
 
                 Pair<Node, Node> newIndividuals = variation.crossover(selectedA, selectedB);
                 if (newIndividuals != null) {
                     newPopulation.add(newIndividuals.getFirst());
                     newPopulation.add(newIndividuals.getSecond());
                 }
-            } else if (random <= param.getCrossoverProbability() + param.getMutationPobability()) {
-                Node mutant = selection.select(this.rankings);
+            } else if (random <= crossoverProb + param.getMutationPobability()) {
+                Node mutant = sel.select(r);
                 mutant = variation.mutate(mutant);
                 newPopulation.add(mutant);
             } else {
-                Node duplicated = selection.select(rankings);
+                Node duplicated = sel.select(r);
                 newPopulation.add(duplicated);
             }
         }
@@ -108,20 +114,23 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         if(!deepDiversity){
             newPopulation.addAll(population);
         }
+
         List<Ranking> tmp = buildRankings(newPopulation, objective);
+
         rankings.clear();
+        List<Ranking> t = new ArrayList();
         while (tmp.size() > 0) {
-            List<Ranking> t = Utils.getFirstParetoFront(tmp);
+            t = Utils.getFirstParetoFront(tmp, t);
             tmp.removeAll(t);
             sortByFirst(t);
             rankings.addAll(t);
         }
+
         rankings = new ArrayList<>(rankings.subList(0, popSize));
         population.clear();
+
         //Obtain an ordinated (as Rankings are) population
-        for(Ranking r: rankings){
-            population.add(r.getTree());
-        }
+        rankings.forEach(rr -> population.add(rr.getTree()));
     }   
 
      

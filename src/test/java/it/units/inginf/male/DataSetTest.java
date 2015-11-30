@@ -78,14 +78,15 @@ public class DataSetTest {
         DataSet dataSet = new DataSet("test", "striping test", "");
         Example example = new Example();
 
-        String noise = "dsfsdfs6789";
-        String noise2 = "283rh9238r3r";
+        String noise = "dsfsdfs6789 ";
+        String noise2 = " 283rh9238r3r";
 
         example.setString(noise + input + noise2 + output + noise);
         int provaIndex1 = example.getString().indexOf(input);
         int provaIndex2 = example.getString().indexOf(output, provaIndex1+1);
         example.getMatch().add(new Bounds(provaIndex1,provaIndex1+ input.length()));
         example.getMatch().add(new Bounds(provaIndex2,provaIndex2+ output.length()));
+
         dataSet.getExamples().add(example);
         dataSet.updateStats();
         return dataSet;

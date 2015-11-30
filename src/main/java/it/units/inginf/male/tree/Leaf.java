@@ -18,12 +18,80 @@
 package it.units.inginf.male.tree;
 
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+
 /**
  *
  * @author MaleLabTs
  */
-public interface Leaf extends Node{
+abstract public class Leaf<V> extends AbstractNode {
+
+
+   private ParentNode parent;
+
+   protected final V value;
+
+
+   abstract public Leaf cloneTree();
+
+   public Leaf(V value) {
+      super();
+      this.value = value;
+      this.hash = 31 * value.hashCode() + getClass().hashCode();
+   }
 
    @Override
-   Leaf cloneTree();    
+   public void setParent(ParentNode parent) {
+      this.parent = parent;
+   }
+
+   private static final List<Node> none = Collections.emptyList();
+
+   @Override
+   public List<Node> children() {
+      return none;
+   }
+
+
+   @Override
+   public ParentNode getParent() {
+      return parent;
+   }
+
+   @Override
+   public final int getMinChildrenCount() {
+      return 0;
+   }
+
+   @Override
+   public final int getMaxChildrenCount() {
+      return 0;
+   }
+
+
+   @Override
+   public boolean isValid() {
+      return true;
+   }
+
+   @Override
+   public final String toString() {
+      return value.toString();
+   }
+
+   @Override
+   public final int hashCode() {
+      return hash;
+   }
+
+   @Override
+   public final boolean equals(Object obj) {
+      if (obj == this) return true;
+      return getClass() == obj.getClass() &&
+              this.hash == ((Leaf)obj).hash &&
+              Objects.equals(this.value, ((Leaf)obj).value);
+   }
+
 }

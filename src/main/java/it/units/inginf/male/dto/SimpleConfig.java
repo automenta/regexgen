@@ -43,8 +43,8 @@ public class SimpleConfig {
     public int generations;
     public int populationSize;
     public DataSet dataset;
-    public boolean populateOptionalFields = true;
-    public boolean isStriped = true;
+    public boolean populateOptionalFields = false;
+    public boolean isStriped = false;
     public boolean isFlagging = false;
     
     transient public String datasetName;

@@ -23,9 +23,11 @@ import it.units.inginf.male.generations.Growth;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.tree.Leaf;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
 import it.units.inginf.male.tree.operator.Group;
 import it.units.inginf.male.tree.operator.NonCapturingGroup;
 import it.units.inginf.male.utils.Pair;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,14 +68,14 @@ public class Variation {
 
             if (randomNodeA != null && randomNodeB != null) {
 
-                Node aParent = randomNodeA.getParent();
-                List<Node> aChilds = aParent.getChildrens();
+                ParentNode aParent = randomNodeA.getParent();
+                List<Node> aChilds = aParent.children();
                 int aIndex = aChilds.indexOf(randomNodeA);
-                Node bParent = randomNodeB.getParent();
-                List<Node> bChilds = bParent.getChildrens();
+                ParentNode bParent = randomNodeB.getParent();
+                List<Node> bChilds = bParent.children();
                 int bIndex = bChilds.indexOf(randomNodeB);
-                aChilds.set(aIndex, randomNodeB);
-                bChilds.set(bIndex, randomNodeA);
+                aParent.set(aIndex, randomNodeB);
+                bParent.set(bIndex, randomNodeA);
                 randomNodeA.setParent(bParent);
                 randomNodeB.setParent(aParent);
 
@@ -161,7 +163,7 @@ public class Variation {
             nodes.add(root);
 
         }
-        for (Node child : root.getChildrens()) {
+        for (Node child : root.children()) {
             enlistNode(child, nodes, isLeaf);
         }
 
@@ -174,24 +176,24 @@ public class Variation {
 
     private void replaceNode(Node root, Node oldChild, Node newChild) {
 
-        Node parent = oldChild.getParent();
-        List<Node> childs = parent.getChildrens();
+        ParentNode parent = oldChild.getParent();
+        List<Node> childs = parent.children();
         int index = childs.indexOf(oldChild);
         newChild.setParent(parent);
         oldChild.setParent(null);
-        childs.set(index, newChild);
+        parent.set(index, newChild);
     }
 
     private void swapNodes(Node a, Node b) {
 
-        Node aParent = a.getParent();
-        List<Node> aChilds = aParent.getChildrens();
+        ParentNode aParent = a.getParent();
+        List<Node> aChilds = aParent.children();
         int aIndex = aChilds.indexOf(a);
-        Node bParent = b.getParent();
-        List<Node> bChilds = bParent.getChildrens();
+        ParentNode bParent = b.getParent();
+        List<Node> bChilds = bParent.children();
         int bIndex = bChilds.indexOf(b);
-        aChilds.set(aIndex, b);
-        bChilds.set(bIndex, a);
+        aParent.set(aIndex, b);
+        bParent.set(bIndex, a);
         a.setParent(bParent);
         b.setParent(aParent);
     }
@@ -205,7 +207,7 @@ public class Variation {
         }
 
         boolean ret = true;
-        for (Node child : root.getChildrens()) {
+        for (Node child : root.children()) {
             ret &= checkMaxDepth(child, depth + 1);
         }
 
@@ -217,7 +219,7 @@ public class Variation {
         if (root instanceof Group) {
             groups.add((Group) root);
         }
-        for (Node child : root.getChildrens()) {
+        for (Node child : root.children()) {
             checkSingleGroup(child, groups);
         }
 
@@ -238,14 +240,14 @@ public class Variation {
             NonCapturingGroup ncg = new NonCapturingGroup();
             if (group != root) {
                 ncg.setParent(group.getParent());
-                int indexOf = ncg.getParent().getChildrens().indexOf(group);
-                ncg.getParent().getChildrens().set(indexOf, ncg);
+                int indexOf = ncg.getParent().children().indexOf(group);
+                ncg.getParent().children().set(indexOf, ncg);
 
             } else {
                 root = ncg;
             }
-            ncg.getChildrens().addAll(group.getChildrens());
-            ncg.getChildrens().get(0).setParent(ncg);
+            ncg.children().addAll(group.children());
+            ncg.children().get(0).setParent(ncg);
         }
 
         return root;

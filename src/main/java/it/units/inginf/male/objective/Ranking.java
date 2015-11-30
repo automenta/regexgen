@@ -19,13 +19,11 @@ package it.units.inginf.male.objective;
 
 import it.units.inginf.male.tree.Node;
 
-import java.util.Objects;
-
 /**
  *
  * @author MaleLabTs
  */
-public class Ranking {
+final public class Ranking {
 
     private final Node tree;
     private final double[] fitness;
@@ -34,6 +32,12 @@ public class Ranking {
         this.tree = tree;
         this.fitness = fitness;
         
+    }
+
+
+
+    public Ranking(Node tree, Objective objective) {
+        this(tree, objective.fitness(tree));
     }
 
     public double[] getFitness() {
@@ -53,27 +57,30 @@ public class Ranking {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Ranking other = (Ranking) obj;
-        Node t = this.tree;
-        Node ot = other.tree;
-        return Objects.equals(t, ot);
-//        if (t != ot && (t == null || !t.equals(ot))) {
+        return tree.equals( ((Ranking)obj ).tree );
+//
+//        if (obj == null) {
 //            return false;
 //        }
-//        return true;
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+//        final Ranking other = (Ranking) obj;
+//        Node t = this.tree;
+//        Node ot = other.tree;
+//        return Objects.equals(t, ot);
+////        if (t != ot && (t == null || !t.equals(ot))) {
+////            return false;
+////        }
+////        return true;
     }
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 97 * hash + (this.tree != null ? this.tree.hashCode() : 0);
-        return hash;
+        return tree.hashCode();
+//        int hash = 5;
+//        hash = 97 * hash + (this.tree != null ? this.tree.hashCode() : 0);
+//        return hash;
     }       
     
 }

@@ -23,7 +23,6 @@ import it.units.inginf.male.tree.DescriptionContext;
 import it.units.inginf.male.tree.Node;
 
 /**
- *
  * @author MaleLabTs
  */
 public class MatchMinMax extends TernaryOperator {
@@ -49,29 +48,29 @@ public class MatchMinMax extends TernaryOperator {
                 if (group) {
                     builder.append("(?:");
                     builder.append(tmp);
-                    builder.append(")");
+                    builder.append(')');
                 } else {
                     builder.append(tmp);
                 }
 
-                builder.append("{");
+                builder.append('{');
                 builder.append(Integer.parseInt(getSecond().toString()));
-                builder.append(",");
+                builder.append(',');
                 builder.append(Integer.parseInt(getThird().toString()));
                 builder.append("}+");
                 break;
             default:
-                builder.append("(?=(");                
+                builder.append("(?=(");
                 if (group) {
                     builder.append("(?:");
                     builder.append(tmp);
-                    builder.append(")");
+                    builder.append(')');
                 } else {
                     builder.append(tmp);
                 }
-                builder.append("{");
+                builder.append('{');
                 builder.append(Integer.parseInt(getSecond().toString()));
-                builder.append(",");
+                builder.append(',');
                 builder.append(Integer.parseInt(getThird().toString()));
                 builder.append("}))\\").append(index);
                 context.incExpansionGroups();
@@ -82,23 +81,26 @@ public class MatchMinMax extends TernaryOperator {
     @Override
     public boolean isValid() {
         Node first = getFirst();
-        boolean validFirst = first.isValid() && !(first instanceof Concatenator || first instanceof Quantifier || first instanceof MatchMinMax || first instanceof MatchMinMaxGreedy || first instanceof Anchor || first instanceof Lookaround);
+        boolean validFirst = first.isValid()
+                && !(first instanceof Concatenator || first instanceof Quantifier || first instanceof MatchMinMax || first instanceof MatchMinMaxGreedy || first instanceof Anchor || first instanceof Lookaround);
 
-        Node second = getSecond();
-        Node third = getThird();
+        if (validFirst) {
 
-        if (third instanceof Constant && second instanceof Constant) {
+            Node second = getSecond();
+            if (!(second instanceof Constant)) return false;
 
             final int leftValue = second.toNonNegativeInteger(-1);
-            final int rightValue = third.toNonNegativeInteger(-1);
+            if (leftValue < 0) return false;
 
-            if (leftValue < 0 || rightValue < 0) {
-                return false;
-            }
-            if (leftValue >= rightValue) {
-                return false;
-            }
-            return validFirst;
+
+            Node third = getThird();
+            if (!(third instanceof Constant)) return false;
+
+            final int rightValue = third.toNonNegativeInteger(-1);
+            if (rightValue < 0) return false;
+
+            return (leftValue < rightValue);
+
         }
 
 

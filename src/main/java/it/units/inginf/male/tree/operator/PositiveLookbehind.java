@@ -43,7 +43,7 @@ public class PositiveLookbehind extends Lookaround {
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         builder.append("(?<=");
-        getChildrens().get(0).describe(builder, context, flavour);
+        children().get(0).describe(builder, context, flavour);
         builder.append(")");
     }
 }

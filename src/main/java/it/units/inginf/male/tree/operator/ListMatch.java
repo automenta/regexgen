@@ -28,6 +28,14 @@ import it.units.inginf.male.tree.RegexRange;
  */
 public class ListMatch extends UnaryOperator {
 
+    public ListMatch() {
+        super();
+    }
+
+    public ListMatch(Node child) {
+        super(child);
+    }
+
     @Override
     protected UnaryOperator buildCopy() {
         return new ListMatch();
@@ -35,15 +43,15 @@ public class ListMatch extends UnaryOperator {
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        Node child = getChildrens().get(0);
-        builder.append("[");
+        Node child = children().get(0);
+        builder.append('[');
         child.describe(builder, context, flavour);
-        builder.append("]");
+        builder.append(']');
     }
     
     @Override
     public boolean isValid() {
-        return checkValid(getChildrens().get(0));
+        return checkValid(children().get(0));
     }
 
     private boolean checkValid(Node root){
@@ -52,7 +60,7 @@ public class ListMatch extends UnaryOperator {
             return false;
         }
 
-        for(Node child:root.getChildrens()){
+        for(Node child:root.children()){
             if(!checkValid(child)) {
                 return false;
             }

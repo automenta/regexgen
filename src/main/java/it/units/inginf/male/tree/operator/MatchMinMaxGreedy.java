@@ -26,7 +26,7 @@ import it.units.inginf.male.tree.Node;
  * @author MaleLabTs
  */
 public class MatchMinMaxGreedy extends TernaryOperator {
-    static int MAX_N_GENERATION = 20;
+
     @Override
     protected TernaryOperator buildCopy() {
         return new MatchMinMaxGreedy();

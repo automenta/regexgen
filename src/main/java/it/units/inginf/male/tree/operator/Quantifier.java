@@ -26,9 +26,17 @@ import it.units.inginf.male.tree.Node;
  */
 public abstract class Quantifier extends UnaryOperator{
 
+    public Quantifier() {
+        super();
+    }
+
+    public Quantifier(Node node) {
+        super(node);
+    }
+
     @Override
     public boolean isValid(){
-        Node child = getChildrens().get(0);
+        Node child = children().get(0);
         return child.isValid() && !(child instanceof Quantifier || child instanceof MatchMinMax || child instanceof MatchMinMaxGreedy || child instanceof Anchor || child instanceof Lookaround);
     }
 

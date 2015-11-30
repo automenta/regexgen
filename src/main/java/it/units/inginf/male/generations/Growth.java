@@ -20,8 +20,11 @@ package it.units.inginf.male.generations;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.tree.Leaf;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -29,12 +32,14 @@ import java.util.List;
  */
 public class Growth implements Generation {
 
-    int maxDepth;
-    Context context;
+    final int maxDepth;
+    final Context context;
+    final Random rng;
 
     public Growth(int maxDepth, Context context) {
         this.maxDepth = maxDepth;
         this.context = context;
+        this.rng = context.getRandom();
     }
 
      /**
@@ -60,39 +65,45 @@ public class Growth implements Generation {
     }
 
     private Node grow(int depth) {
-        Node tree = randomFunction();
+        Node _tree = randomFunction();
+        ParentNode tree = (ParentNode) _tree;
+
         if (depth >= this.maxDepth - 1) {
 
             for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
                 Leaf leaf = randomLeaf();
-                leaf.setParent(tree);
-                tree.getChildrens().add(leaf);
+                add(tree, leaf);
             }
 
         } else {
+            
             for (int i = tree.getMaxChildrenCount() - tree.getMinChildrenCount(); i < tree.getMaxChildrenCount(); i++) {
-                if (context.getRandom().nextBoolean()) {
+
+                if (rng.nextBoolean()) {
                     Node node = grow(depth + 1);
-                    node.setParent(tree);
-                    tree.getChildrens().add(node);
+                    add(tree, node);
                 } else {
                     Leaf leaf = randomLeaf();
-                    leaf.setParent(tree);
-                    tree.getChildrens().add(leaf);
+                    add(tree, leaf);
                 }
             }
         }
         return tree;
     }
 
+    static void add(ParentNode tree, Node n) {
+        n.setParent(tree);
+        tree.add(n);
+    }
+
     private Node randomFunction() {
 
         List<Node> functionSet = context.getConfiguration().getNodeFactory().getFunctionSet();
-        return functionSet.get(context.getRandom().nextInt(functionSet.size())).cloneTree();
+        return functionSet.get(rng.nextInt(functionSet.size())).cloneTree();
     }
 
     private Leaf randomLeaf() {
         List<Leaf> terminalSet = context.getConfiguration().getNodeFactory().getTerminalSet();
-        return terminalSet.get(context.getRandom().nextInt(terminalSet.size())).cloneTree();
+        return terminalSet.get(rng.nextInt(terminalSet.size())).cloneTree();
     }
 }

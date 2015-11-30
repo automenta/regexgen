@@ -18,12 +18,20 @@
 package it.units.inginf.male.tree.operator;
 
 import it.units.inginf.male.tree.DescriptionContext;
+import it.units.inginf.male.tree.Node;
 
 /**
  *
  * @author MaleLabTs
  */
 public class Concatenator extends BinaryOperator {
+
+    public Concatenator(Node a, Node b) {
+        super(a, b);
+    }
+    public Concatenator() {
+        super();
+    }
 
     @Override
     protected BinaryOperator buildCopy() {

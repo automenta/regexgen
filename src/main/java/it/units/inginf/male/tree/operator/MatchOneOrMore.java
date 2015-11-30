@@ -26,10 +26,18 @@ import it.units.inginf.male.tree.Node;
  */
 public class MatchOneOrMore extends Quantifier {
 
+    public MatchOneOrMore() {
+        super();
+    }
+
+    public MatchOneOrMore(Node node) {
+        super(node);
+    }
+
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         StringBuilder tmp = new StringBuilder();
-        Node child = getChildrens().get(0);
+        Node child = children().get(0);
         // Counts the group immediatly
         int index = context.incGroups();
         child.describe(tmp, context, flavour);

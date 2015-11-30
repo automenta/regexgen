@@ -25,42 +25,38 @@ import java.util.List;
  *
  * @author MaleLabTs
  */
-public interface Node {
-    
-    Node cloneTree();
+public abstract class Node {
 
-    Node getParent();
-    void setParent(Node parent);
-    
-    int getMinChildrenCount();
-    int getMaxChildrenCount();
-    List<Node> getChildrens();
-    long getId();
-    
-    void describe(StringBuilder builder);
-    void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour);
-    boolean isValid();
 
-    default int toNonNegativeInteger(int ifMissing) {
-        String s = toString();
-        if (!s.isEmpty()) {
 
-            char cc = s.charAt(0);
-            if ((cc >= '0' && cc <= '9')) {
-                try {
-                    return Utils.i(s);
-                } catch (NumberFormatException ex) {
-                }
-            }
-        }
-        return ifMissing;
+    public abstract Node cloneTree();
+
+    public abstract ParentNode getParent();
+    public abstract void setParent(ParentNode parent);
+
+
+    public abstract int getMinChildrenCount();
+    public abstract int getMaxChildrenCount();
+    public abstract List<Node> children();
+    public abstract long getId();
+
+    public abstract void describe(StringBuilder builder);
+    public abstract void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour);
+    public abstract boolean isValid();
+
+    public final int toNonNegativeInteger(int ifMissing) {
+        return Utils.i(toString(), ifMissing);
     }
 
-    public enum RegexFlavour {
+
+
+
+    public static enum RegexFlavour {
         JAVA,
         CSHARP,
         JS
     }
-    public boolean isCharacterClass();
-    public boolean isEscaped();
+
+    public abstract boolean isCharacterClass();
+    public abstract boolean isEscaped();
 }

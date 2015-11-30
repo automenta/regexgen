@@ -32,14 +32,14 @@ public class Group extends UnaryOperator{
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        builder.append("(");
+        builder.append('(');
         context.incGroups();
-        getChildrens().get(0).describe(builder, context, flavour);
-        builder.append(")");
+        children().get(0).describe(builder, context, flavour);
+        builder.append(')');
     }
     
     @Override
     public boolean isValid() {
-        return getChildrens().get(0).isValid();
+        return children().get(0).isValid();
     }
 }

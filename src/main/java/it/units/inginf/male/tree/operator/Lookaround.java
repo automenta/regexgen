@@ -29,7 +29,7 @@ public abstract class Lookaround extends UnaryOperator {
 
     @Override
     public boolean isValid() {
-        Node child = getChildrens().get(0);
+        Node child = children().get(0);
         return child.isValid() && !(child instanceof RegexRange || child instanceof Anchor || child instanceof Backreference);
     }
     private int numberQuantifier = 0;
@@ -43,7 +43,7 @@ public abstract class Lookaround extends UnaryOperator {
             numberQuantifier++;
         }
 
-        for (Node child : root.getChildrens()) {
+        for (Node child : root.children()) {
             checkQuantifiers(child);
         }
 

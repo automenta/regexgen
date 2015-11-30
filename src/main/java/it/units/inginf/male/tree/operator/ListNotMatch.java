@@ -35,7 +35,7 @@ public class ListNotMatch extends UnaryOperator {
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        Node child = getChildrens().get(0);
+        Node child = children().get(0);
         builder.append("[^");
         child.describe(builder, context, flavour);
         builder.append("]");
@@ -43,7 +43,7 @@ public class ListNotMatch extends UnaryOperator {
     
     @Override
     public boolean isValid() {
-        return checkValid(getChildrens().get(0));
+        return checkValid(children().get(0));
     }
 
     private boolean checkValid(Node root){
@@ -52,7 +52,7 @@ public class ListNotMatch extends UnaryOperator {
             return false;
         }
 
-        for(Node child:root.getChildrens()){
+        for(Node child:root.children()){
             if(!checkValid(child))
                 return false;
         }

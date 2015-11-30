@@ -17,32 +17,27 @@
  */
 package it.units.inginf.male.tree;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  *
  * @author MaleLabTs
  */
-public abstract class AbstractNode implements Node {
+public abstract class AbstractNode extends Node {
 
-    private List<Node> childrens;
-    private long id;
+
+    private final long id;
+
+    transient int hash = 0;
+
 
     @Override
-    public long getId() {
+    public final long getId() {
         return id;
     }
 
     public AbstractNode() {
-        id = IDFactory.getInstance().nextID();
-        childrens = new ArrayList<>(getMaxChildrenCount());
+        id = IDFactory.nextID();
     }
 
-    @Override
-    public List<Node> getChildrens() {
-        return childrens;
-    }
 
     @Override
     public void describe(StringBuilder builder) {
@@ -58,4 +53,7 @@ public abstract class AbstractNode implements Node {
     public boolean isEscaped(){
         return false;
     }
+
+
+
 }
