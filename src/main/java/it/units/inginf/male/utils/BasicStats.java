@@ -21,7 +21,7 @@ package it.units.inginf.male.utils;
  *
  * @author MaleLabTs
  */
-public class BasicStats {
+public final class BasicStats {
 
     //added transient modifier for webapp
     public long fp = 0;

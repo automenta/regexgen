@@ -17,6 +17,8 @@
  */
 package it.units.inginf.male.variations;
 
+import com.gs.collections.api.tuple.Twin;
+import com.gs.collections.impl.tuple.Tuples;
 import it.units.inginf.male.configuration.EvolutionParameters;
 import it.units.inginf.male.generations.Generation;
 import it.units.inginf.male.generations.Growth;
@@ -26,7 +28,6 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.ParentNode;
 import it.units.inginf.male.tree.operator.Group;
 import it.units.inginf.male.tree.operator.NonCapturingGroup;
-import it.units.inginf.male.utils.Pair;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -53,12 +54,12 @@ public class Variation {
      * @param individualB the second individual to apply the crossover
      * @return two new individuals
      */
-    public Pair<Node, Node> crossover(Node individualA, Node individualB) {
+    public Twin<Node> crossover(Node individualA, Node individualB, int maxTries) {
         boolean isGood = false;
         Node newIndividualA = null;
         Node newIndividualB = null;
 
-        for (int tries = 0; tries < 20; tries++) {
+        for (int tries = 0; tries < maxTries; tries++) {
 
             newIndividualA = individualA.cloneTree();
             newIndividualB = individualB.cloneTree();
@@ -96,7 +97,7 @@ public class Variation {
 
 
         if (isGood) {
-            return new Pair<>(newIndividualA, newIndividualB);
+            return Tuples.twin(newIndividualA, newIndividualB);
         } else {
             return null;
 
@@ -119,7 +120,7 @@ public class Variation {
 
             Node randomNode = pickRandomNode(mutant);
             if (randomNode != null) {
-                replaceNode(mutant, randomNode, newNode);
+                replaceNode(randomNode, newNode);
                 if (checkMaxDepth(mutant, 1) && mutant.isValid()) {
                     break;
                 }
@@ -157,7 +158,7 @@ public class Variation {
         return nodeList.get(randomIndex);
     }
 
-    private void enlistNode(Node root, List<Node> nodes, boolean isLeaf) {
+    private static void enlistNode(Node root, List<Node> nodes, boolean isLeaf) {
 
         if (isNodePickable(root, isLeaf)) {
             nodes.add(root);
@@ -170,11 +171,11 @@ public class Variation {
 
     }
 
-    private boolean isNodePickable(Node root, boolean isLeaf) {
-        return !(root instanceof Leaf ^ isLeaf) && root.getParent() != null;
+    private static boolean isNodePickable(Node root, boolean isLeaf) {
+        return root instanceof Leaf == isLeaf && root.getParent() != null;
     }
 
-    private void replaceNode(Node root, Node oldChild, Node newChild) {
+    private void replaceNode(Node oldChild, Node newChild) {
 
         ParentNode parent = oldChild.getParent();
         List<Node> childs = parent.children();
@@ -184,7 +185,7 @@ public class Variation {
         parent.set(index, newChild);
     }
 
-    private void swapNodes(Node a, Node b) {
+    private static void swapNodes(Node a, Node b) {
 
         ParentNode aParent = a.getParent();
         List<Node> aChilds = aParent.children();
@@ -214,7 +215,7 @@ public class Variation {
         return ret;
     }
 
-    private void checkSingleGroup(Node root, List<Group> groups) {
+    private static void checkSingleGroup(Node root, List<Group> groups) {
 
         if (root instanceof Group) {
             groups.add((Group) root);
@@ -246,7 +247,7 @@ public class Variation {
             } else {
                 root = ncg;
             }
-            ncg.children().addAll(group.children());
+            ncg.addAll(group.children());
             ncg.children().get(0).setParent(ncg);
         }
 

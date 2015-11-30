@@ -30,22 +30,26 @@ public class Backreference extends Leaf<Integer> {
         super(value);
     }
 
+    public Backreference(Backreference value){
+        super(value);
+    }
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        builder.append("\\");
+        builder.append('\\');
+        int v = value.intValue();
         switch (flavour) {
             case JAVA:
-                builder.append(value);
+                builder.append(v);
                 break;
             default:
-                builder.append(value + context.getExpansionGroups());
+                builder.append(v + context.getExpansionGroups());
         }
     }
 
     @Override
     public Leaf cloneTree() {
-        return new Backreference(value);
+        return new Backreference(this);
     }
 
 

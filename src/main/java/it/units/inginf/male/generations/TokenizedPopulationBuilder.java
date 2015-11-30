@@ -171,20 +171,18 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
         // /w/w/w is converted to /w++
         if(compact){
             Deque<Node> newNodes = new LinkedList<>();
-            String nodeValue;
-            String nextValue;
             //do compact
             
             while (!nodes.isEmpty()) {
 
                 Node node = nodes.pollFirst();
-                nodeValue = node.toString();
+                String nodeValue = node.toString();
                 boolean isRepeat = false;
 
                 while (!nodes.isEmpty()){
                     Node next = nodes.peek();
-                    nextValue = next.toString();
-                     
+                    String nextValue = next.toString();
+
                     if(nodeValue.equals(nextValue)){
                         isRepeat = true;
                         //Consume and drop the repetition

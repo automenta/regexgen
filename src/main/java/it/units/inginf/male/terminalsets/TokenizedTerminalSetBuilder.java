@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.terminalsets;
 
+import com.gs.collections.impl.set.mutable.primitive.CharHashSet;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.inputs.DataSet;
@@ -27,13 +28,8 @@ import it.units.inginf.male.tree.NodeFactory;
 import it.units.inginf.male.utils.BasicTokenizer;
 import it.units.inginf.male.utils.Tokenizer;
 import it.units.inginf.male.utils.Utils;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
+import java.util.*;
 
 /**
  * Initialize terminal set from examples (tokens, ranges) and add significant tokens to the terminal set.
@@ -93,7 +89,7 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         //This is used later for Ranges computation and to define the used character set
-        SortedSet<Character> charset = new TreeSet<>();
+        CharHashSet charset = new CharHashSet();
        
         NodeFactory nodeFactory = configuration.getNodeFactory(); 
         
@@ -150,7 +146,7 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         
         
         //Generate ranges from characters
-        terminalSet.addAll(Utils.generateRegexRanges(charset));
+        Utils.generateRegexRanges(charset, terminalSet::add);
         
         //Add classes
         terminalSet.add(new Constant("\\d"));

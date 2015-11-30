@@ -392,7 +392,7 @@ public class Configuration {
         }
         if (!outputFolder.isDirectory()) {
             if (!outputFolder.mkdirs()) {
-                throw new ConfigurationException("Unable to create output folder \""+outputFolder+"\"");
+                throw new ConfigurationException("Unable to create output folder \""+outputFolder+ '"');
             }
         }
     }   

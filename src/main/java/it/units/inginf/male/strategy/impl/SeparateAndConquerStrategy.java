@@ -109,15 +109,15 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
     @Override
     public Void call() throws TreeEvaluationException {
         try {
-            int generation;
             listener.evolutionStarted(this);
             initialize();
             List<Node> bests = new LinkedList<>();
             //Variables for termination criteria
-            String oldGenerationBestValue = null;
-            int terminationCriteriaGenerationsCounter = 0;
             context.setSeparateAndConquerEnabled(true);
-            
+
+            int terminationCriteriaGenerationsCounter = 0;
+            String oldGenerationBestValue = null;
+            int generation;
             for (generation = 0; generation < param.getGenerations(); generation++) {
                 context.setStripedPhase(context.getDataSetContainer().isDataSetStriped() && ((generation % context.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 
@@ -229,7 +229,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
         Collections.sort(front, comparator);
     }
 
-    private Node joinSolutions(List<Node> bests) {
+    private static Node joinSolutions(List<Node> bests) {
         Deque<Node> nodes = new LinkedList<>(bests);
         Deque<Node> tmp = new LinkedList<>();
         while (nodes.size() > 1) {

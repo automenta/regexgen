@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.evaluators;
 
+import com.gs.collections.impl.list.mutable.FastList;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.inputs.DataSet.Example;
@@ -60,10 +61,10 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
         return results;
     }
 
-    private void eval(List<List<Bounds>> results, Matcher matcher, Example example) {
+    private static void eval(List<List<Bounds>> results, Matcher matcher, Example example) {
         try {
             Matcher m = matcher.reset(example.getString());
-            List<Bounds> b = new ArrayList<>();
+            List<Bounds> b = new FastList<>();
             while (m.find()) {
                 b.add(new Bounds(matcher.start(0), matcher.end(0)));
             }

@@ -17,20 +17,21 @@
  */
 package it.units.inginf.male.tree;
 
-import java.util.*;
-
 /**
  *
  * @author MaleLabTs
  */
 public class Anchor extends Leaf<String> {
 
-    final static Set<String> allowedClasses = new HashSet<>(Arrays.asList("\\w", "\\d", ".", "\\b", "\\s"));
+    //final static Set<String> allowedClasses = new HashSet<>(Arrays.asList("\\w", "\\d", ".", "\\b", "\\s"));
+
+    public Anchor(Anchor value) {
+        super(value);
+    }
 
     public Anchor(String value) {
         super(value);
     }
-
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
@@ -39,7 +40,7 @@ public class Anchor extends Leaf<String> {
 
     @Override
     public Leaf cloneTree() {
-        Anchor clone = new Anchor(value);
+        Anchor clone = new Anchor(this);
         return clone;
     }
 

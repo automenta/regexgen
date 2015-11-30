@@ -37,7 +37,7 @@ public class MatchOneOrMore extends Quantifier {
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         StringBuilder tmp = new StringBuilder();
-        Node child = children().get(0);
+        Node child = get(0);
         // Counts the group immediatly
         int index = context.incGroups();
         child.describe(tmp, context, flavour);
@@ -48,7 +48,7 @@ public class MatchOneOrMore extends Quantifier {
                 if (group) {
                     builder.append("(?:");
                     builder.append(tmp);
-                    builder.append(")");
+                    builder.append(')');
                 } else {
                     builder.append(tmp);
                 }
@@ -59,7 +59,7 @@ public class MatchOneOrMore extends Quantifier {
                 if (group) {
                     builder.append("(?:");
                     builder.append(tmp);
-                    builder.append(")");
+                    builder.append(')');
                 } else {
                     builder.append(tmp);
                 }

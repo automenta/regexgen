@@ -23,14 +23,12 @@ package it.units.inginf.male;
  */
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.configuration.Configurator;
-import it.units.inginf.male.evaluators.TreeEvaluationException;
 import it.units.inginf.male.outputs.Results;
 import it.units.inginf.male.strategy.ExecutionStrategy;
 import it.units.inginf.male.strategy.impl.CoolTextualExecutionListener;
 import it.units.inginf.male.utils.Utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
@@ -45,7 +43,7 @@ public class Main {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws TreeEvaluationException, IOException, Exception {
+    public static void main(String[] args) throws Exception {
         if (args.length < 1) {
             printUsage();
             System.exit(0);

@@ -17,17 +17,20 @@
  */
 package it.units.inginf.male.strategy.impl;
 
+import com.gs.collections.api.tuple.Twin;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.generations.Generation;
 import it.units.inginf.male.generations.Ramped;
 import it.units.inginf.male.objective.Ranking;
 import it.units.inginf.male.selections.Selection;
 import it.units.inginf.male.tree.Node;
-import it.units.inginf.male.utils.Pair;
 import it.units.inginf.male.utils.UniqueList;
 import it.units.inginf.male.utils.Utils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Optional accepted parameters:
@@ -92,10 +95,10 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
                 Node selectedA = sel.select(r);
                 Node selectedB = sel.select(r);
 
-                Pair<Node, Node> newIndividuals = variation.crossover(selectedA, selectedB);
+                Twin<Node> newIndividuals = variation.crossover(selectedA, selectedB, maxCrossoverTries);
                 if (newIndividuals != null) {
-                    newPopulation.add(newIndividuals.getFirst());
-                    newPopulation.add(newIndividuals.getSecond());
+                    newPopulation.add(newIndividuals.getOne());
+                    newPopulation.add(newIndividuals.getTwo());
                 }
             } else if (random <= crossoverProb + param.getMutationPobability()) {
                 Node mutant = sel.select(r);

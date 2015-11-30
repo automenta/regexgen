@@ -16,6 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package it.units.inginf.male.terminalsets;
+
+import com.gs.collections.impl.set.mutable.primitive.CharHashSet;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.inputs.DataSet;
@@ -24,16 +26,8 @@ import it.units.inginf.male.tree.Constant;
 import it.units.inginf.male.tree.Leaf;
 import it.units.inginf.male.tree.NodeFactory;
 import it.units.inginf.male.utils.Utils;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
-import java.util.TreeSet;
+
+import java.util.*;
 
 /**
  * Initialize terminalSet from examples.   
@@ -72,7 +66,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         //This is used later for Ranges computation
-        SortedSet<Character> charset = new TreeSet<>();
+        CharHashSet charset = new CharHashSet();
        
         //Ngrams
         //Find out the common ngrams into positives examples
@@ -125,7 +119,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
             }
         }
         
-        ngrams = this.sortByValues(ngrams);
+        ngrams = sortByValues(ngrams);
         
         long numberNgrams = 0; //Considering positives only. Is the sum of the ngrams ratios. 
         for (Map.Entry<String, Long> entry : ngrams.entrySet()) {
@@ -147,11 +141,11 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         //Add all the met characters to the Training Set
         //All the caracters are added, there is no filtering 
         //(this is different from ngrams larger than 1) 
-        for (char c : charset) {
+        for (char c : charset.toSortedArray()) {
             terminalSet.add(new Constant(Utils.escape(c)));
         }
         
-        terminalSet.addAll(Utils.generateRegexRanges(charset));
+        Utils.generateRegexRanges(charset, terminalSet::add);
        
         nodeFactory.getTerminalSet().clear();
         nodeFactory.getTerminalSet().addAll(terminalSet);        
@@ -172,7 +166,7 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
             if (compare == 0) {
                 String s1 = (String) k1;
                 String s2 = (String) k2;
-                compare = s2.length() - s1.length();
+                compare = Integer.compare(s2.length(), s1.length());
                 if(compare == 0){
                     compare = s1.compareTo(s2);
                 }

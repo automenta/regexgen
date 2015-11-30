@@ -33,13 +33,13 @@ public class NonCapturingGroup extends UnaryOperator {
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         builder.append("(?:");
-        children().get(0).describe(builder, context, flavour);
-        builder.append(")");
+        get(0).describe(builder, context, flavour);
+        builder.append(')');
     }
 
     @Override
     public boolean isValid() {
-        return children().get(0).isValid();
+        return get(0).isValid();
     }
 
 }

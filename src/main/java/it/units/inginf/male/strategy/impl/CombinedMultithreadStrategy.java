@@ -69,9 +69,7 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
         int threads = countThreads(parameters);
         Class<? extends RunStrategy> strategyClass = getStrategy(parameters);
         Class<? extends RunStrategy> altStrategyClass = strategyClass;
-        
-        String altFitnessClassName = null;
-        
+
         executor = Executors.newFixedThreadPool(Math.max(1, threads));
         ExecutorCompletionService<Void> completionService = new ExecutorCompletionService<>(executor);
         long initialSeed = configuration.getInitialSeed();
@@ -83,7 +81,8 @@ public class CombinedMultithreadStrategy extends AbstractExecutionStrategy {
             altStrategyClass = this.getAlternativeStrategy(parameters);
             changejobs = jobs / 2;
         }
-        
+
+        String altFitnessClassName = null;
         if(parameters.containsKey(RUN_ALT_FITNESS_KEY)){
             altFitnessClassName = this.getAlternativeFitness(parameters);
         }

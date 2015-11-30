@@ -45,10 +45,10 @@ public class Or extends BinaryOperator {
             builder.append("(?:");
         }
         getLeft().describe(builder, context, flavour);
-        builder.append("|");
+        builder.append('|');
         getRight().describe(builder, context, flavour);
         if (getParent() instanceof Quantifier) {
-            builder.append(")");
+            builder.append(')');
         }
     }
 

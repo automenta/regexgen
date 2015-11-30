@@ -160,11 +160,9 @@ public class DataSet {
             if((((i*100)/examples.size())%5)==0){
                 System.out.format("randomize %d%%\n",((i*100)/examples.size()));
             }
-            Example ex1;
-            Example ex2;
             int destIndex = random.nextInt(examples.size());
-            ex1 = examples.get(i);
-            ex2 = examples.get(destIndex);
+            Example ex1 = examples.get(i);
+            Example ex2 = examples.get(destIndex);
             examples.set(i, ex2);
             examples.set(destIndex, ex1);
         }
@@ -215,7 +213,7 @@ public class DataSet {
     public DataSet initStripedDatasetView(double marginSize){
         this.stripedDataset = new DataSet(this.name, this.description, this.regexTarget);
         for(Example example : this.examples){
-            this.stripedDataset.getExamples().addAll(this.stripeExample(example, marginSize));
+            this.stripedDataset.getExamples().addAll(stripeExample(example, marginSize));
         }        
         return this.stripedDataset;
     }
@@ -340,11 +338,10 @@ public class DataSet {
      * @return true, when the dataset has been modified by reduction
      */
     public boolean addSeparateAndConquerLevel(String individualRegex, int jobId, boolean convertToUnmatch, boolean isFlagging){
-        boolean modified = false;
         DataSet oldDataset = this.getLastSeparateAndConquerDataSet(jobId);
         DataSet dataset = oldDataset.reduceSeparateAndConquerDataset(individualRegex, convertToUnmatch, isFlagging);
         dataset.updateStats();
-        modified = (dataset.getNumberMatches() != oldDataset.getNumberMatches());
+        boolean modified = (dataset.getNumberMatches() != oldDataset.getNumberMatches());
         this.getSeparateAndConquerLevels(jobId).add(dataset);
         if(this.getStripedDataset()!=null){
             modified = this.getStripedDataset().addSeparateAndConquerLevel(individualRegex,jobId, convertToUnmatch, isFlagging) || modified;       
@@ -782,10 +779,10 @@ public class DataSet {
          * @return
          */
         static public int countRangesThatCollideZone(List<Bounds> ranges, List<Bounds> zoneRanges) {
-            int overallEOAA = 0;
-            Collections.sort(zoneRanges);  
+            Collections.sort(zoneRanges);
              
             //This approach relies on the fact that both annotatedRanges and extracted ranges are ordered
+            int overallEOAA = 0;
             for (Bounds extractedBounds : ranges) {
                 for (Bounds expectedBounds : zoneRanges) {
                     if(expectedBounds.start >= extractedBounds.end){

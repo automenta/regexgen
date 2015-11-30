@@ -110,7 +110,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
     }
 
     //number of chars of this extracted rages which falls into expected ranges
-    private int intersection(List<Bounds> extractedRanges, List<Bounds> expectedRanges) {
+    private static int intersection(List<Bounds> extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
          
         for (Bounds extractedBounds : extractedRanges) {
@@ -123,7 +123,7 @@ public class PrecisionCharmaskLengthObjective implements Objective {
     }
 
     //number of idential intervals
-    private int countIdenticalRanges(List<Bounds> rangesA, List<Bounds> rangesB) {
+    private static int countIdenticalRanges(List<Bounds> rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
          
         for (Bounds boundsA : rangesA) {

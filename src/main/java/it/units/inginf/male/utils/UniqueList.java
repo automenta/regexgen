@@ -29,10 +29,11 @@ import java.util.Set;
  */
 public class UniqueList<E> extends ArrayList<Node> {
 
-    private final Set<String> hashes = new HashSet<>();
+    private final Set<String> hashes;
 
     public UniqueList(int initialCapacity) {
         super(initialCapacity);
+        hashes = new HashSet<>();
     }        
 
     @Override
@@ -50,7 +51,7 @@ public class UniqueList<E> extends ArrayList<Node> {
     public boolean addAll(Collection<? extends Node> c) {
         boolean ret = false;
         for(Node n:c){
-            ret = this.add(n) | ret;
+            ret = this.add(n) || ret;
         }
         return ret;
     }

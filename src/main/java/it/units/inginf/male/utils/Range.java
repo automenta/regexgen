@@ -25,7 +25,7 @@ import java.util.List;
  * This object represents a range of contigous row indexes
  * @author MaleLabTs
  */
-public class Range implements Comparable<Range>{
+public final class Range implements Comparable<Range>{
     private int startIndex;
     private int endIndex;
 
@@ -84,9 +84,26 @@ public class Range implements Comparable<Range>{
     }
 
     @Override
-    public int compareTo(Range o) {
-       return (this.startIndex - o.startIndex);
+    public final int compareTo(Range o) {
+        return Integer.compare(startIndex, o.startIndex);
     }
-    
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Range range = (Range) o;
+
+        if (startIndex != range.startIndex) return false;
+        return endIndex == range.endIndex;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = startIndex;
+        result = 31 * result + endIndex;
+        return result;
+    }
 }

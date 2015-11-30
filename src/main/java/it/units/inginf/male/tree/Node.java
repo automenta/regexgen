@@ -49,8 +49,6 @@ public abstract class Node {
     }
 
 
-
-
     public static enum RegexFlavour {
         JAVA,
         CSHARP,

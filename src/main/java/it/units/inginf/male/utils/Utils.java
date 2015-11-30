@@ -17,6 +17,8 @@
  */
 package it.units.inginf.male.utils;
 
+import com.gs.collections.api.set.primitive.CharSet;
+import com.gs.collections.impl.set.mutable.primitive.CharHashSet;
 import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.objective.Ranking;
@@ -24,6 +26,7 @@ import it.units.inginf.male.tree.RegexRange;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -192,9 +195,8 @@ public class Utils {
     }
 
     public static void saveFile(String text, String pathOfFile) {
-        Writer writer;
         try {
-            writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), "utf-8");
+            Writer writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), "utf-8");
             writer.write(text);
             writer.close();
         } catch (IOException ex) {
@@ -212,8 +214,9 @@ public class Utils {
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
 
-    private static transient final Set<Character> quoteList = new TreeSet<>(
-            Arrays.asList(new Character[]{'?', '+', '*', '.', '[', ']', '\\', '$', '(', ')', '^', '{', '|', '-', '&'}));
+    private static transient final CharHashSet quoteList = new CharHashSet(
+            '?', '+', '*', '.', '[', ']', '\\', '$', '(', ')', '^', '{', '|', '-', '&');
+
 
     /**
      * Returns a set with all n-grams; 1<n<4
@@ -230,16 +233,19 @@ public class Utils {
      * @return
      */
     public static Set<String> subparts(String word, int nMin, int nMax) {
+
         final int x = word.length() * (nMax-nMin);
 
         Set<String> subparts = new HashSet<>(x);
+
         for (int n = nMin; n <= nMax; n++) {
             for (int i = 0; i < word.length(); i++) {
-                StringBuilder builder = new StringBuilder();
-                String w = word.substring(i,
-                        Math.min(i + n, word.length()));
-                for (char c : w.toCharArray()) {
-                    builder.append(escape(c));
+
+                int end = Math.min(i + n, word.length());
+
+                StringBuilder builder = new StringBuilder(end-i /* estimate */);
+                for (int c = i; c < end; c++) {
+                    builder.append(escape(word.charAt(c)));
                 }
                 subparts.add(builder.toString());
             }
@@ -255,7 +261,7 @@ public class Utils {
     }
     
     public static String escape(String string){
-        StringBuilder stringBuilder = new StringBuilder();
+        StringBuilder stringBuilder = new StringBuilder(string.length());
         char[] stringChars = string.toCharArray();
         for(char character : stringChars){
             stringBuilder.append(escape(character));
@@ -270,29 +276,32 @@ public class Utils {
      * @param charset the character list i.e. {a,b,g,r,t,u,v,5}
      * @return the contiguous character ranges i.e. {[a-b],[t-v]}
      */
-    public static List<RegexRange> generateRegexRanges(Collection<Character> charset) {
+    public static void generateRegexRanges(CharSet charset, Consumer<RegexRange> each) {
          
-        List<RegexRange> regexRangesList = new LinkedList<>();
-        TreeSet<Character> orderedCharset = new TreeSet<>(charset);
-        Character start = null;
-        Character old = null;
-        for (Character c : charset) {
-            if (old == null) {
-                //The first round
-                old = orderedCharset.first();
-                start = old;
-                continue; //pick the next 
-            }
-            //when we have an "hole" or is the last character it checks if the previous range (old -start) is larger than 1; 
+
+        char[] cc = charset.toSortedArray();
+        //TreeSet<Character> orderedCharset = new CharSet(charset);
+        char start;
+        char old;
+        char first = cc[0];
+        char last = cc[cc.length-1];
+
+        old = start = first;
+
+        for (int i = 1; i < cc.length; i++) {
+            char c = cc[i];
+
+            //when we have an "hole" or is the last character it checks if the previous range (old -start) is larger than 1;
             //Ranges bigger than 1 char are saved
-            if (((c - old) > 1 || Objects.equals(orderedCharset.last(), c))) {
+            if (((c - old) > 1 || last == c)) {
                 if ((old - start) > 1) {
-                    regexRangesList.add(new RegexRange(escape(start) + "-" + escape(old)));
+                    each.accept(
+                        new RegexRange(escape(start) + '-' + escape(old))
+                    );
                 }
                 start = c;
             }
             old = c;
         }
-        return regexRangesList;
     }
 }

@@ -32,9 +32,9 @@ public class NegativeLookbehind extends Lookaround {
 
     @Override
     public boolean isValid() {
-        boolean valid = super.isValid();
-        if (!valid) {
-            return valid;
+
+        if (!super.isValid()) {
+            return false;
         }                
         
         return isLookbehindValid();
@@ -43,7 +43,7 @@ public class NegativeLookbehind extends Lookaround {
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         builder.append("(?<!");
-        children().get(0).describe(builder, context, flavour);
-        builder.append(")");
+        get(0).describe(builder, context, flavour);
+        builder.append(')');
     }
 }

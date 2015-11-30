@@ -42,6 +42,12 @@ abstract public class Leaf<V> extends AbstractNode {
       this.hash = 31 * value.hashCode() + getClass().hashCode();
    }
 
+   public Leaf(Leaf<V> copy) {
+      super();
+      this.value = copy.value;
+      this.hash = copy.hash;
+   }
+
    @Override
    public void setParent(ParentNode parent) {
       this.parent = parent;

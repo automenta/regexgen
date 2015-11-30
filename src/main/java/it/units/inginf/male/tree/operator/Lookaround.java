@@ -19,6 +19,7 @@ package it.units.inginf.male.tree.operator;
 
 import it.units.inginf.male.tree.Anchor;
 import it.units.inginf.male.tree.Node;
+import it.units.inginf.male.tree.ParentNode;
 import it.units.inginf.male.tree.RegexRange;
 
 /**
@@ -29,7 +30,7 @@ public abstract class Lookaround extends UnaryOperator {
 
     @Override
     public boolean isValid() {
-        Node child = children().get(0);
+        Node child = get(0);
         return child.isValid() && !(child instanceof RegexRange || child instanceof Anchor || child instanceof Backreference);
     }
     private int numberQuantifier = 0;
@@ -43,10 +44,8 @@ public abstract class Lookaround extends UnaryOperator {
             numberQuantifier++;
         }
 
-        for (Node child : root.children()) {
-            checkQuantifiers(child);
-        }
-
+        if (root instanceof ParentNode)
+            ((ParentNode)root).forEach(n -> checkQuantifiers(n));
     }
 
     protected boolean isLookbehindValid() {

@@ -35,11 +35,11 @@ public class MatchMinMaxGreedy extends TernaryOperator {
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         getFirst().describe(builder, context, flavour);
-        builder.append("{");
+        builder.append('{');
         builder.append(Integer.parseInt(getSecond().toString()));
-        builder.append(",");
+        builder.append(',');
         builder.append(Integer.parseInt(getThird().toString()));
-        builder.append("}");
+        builder.append('}');
     }
 
     @Override

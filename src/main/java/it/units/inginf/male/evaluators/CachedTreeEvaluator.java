@@ -22,6 +22,7 @@ import it.units.inginf.male.inputs.Context.EvaluationPhases;
 import it.units.inginf.male.inputs.DataSet.Bounds;
 import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.utils.Triplet;
+
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -41,7 +42,7 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
 
         StringBuilder sb = new StringBuilder();
         root.describe(sb);
-        //List<List<Bounds>> results;
+
         Triplet<EvaluationPhases, Boolean, String> key = new Triplet<>(context.getPhase(), context.isStripedPhase(), sb.toString());
         synchronized (cache) {
             return cache.compute(key, (k, res) -> {

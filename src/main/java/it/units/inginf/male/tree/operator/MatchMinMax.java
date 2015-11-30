@@ -54,9 +54,9 @@ public class MatchMinMax extends TernaryOperator {
                 }
 
                 builder.append('{');
-                builder.append(Integer.parseInt(getSecond().toString()));
+                builder.append(getSecond().toNonNegativeInteger(-1));
                 builder.append(',');
-                builder.append(Integer.parseInt(getThird().toString()));
+                builder.append(getThird().toNonNegativeInteger(-1));
                 builder.append("}+");
                 break;
             default:
@@ -69,9 +69,9 @@ public class MatchMinMax extends TernaryOperator {
                     builder.append(tmp);
                 }
                 builder.append('{');
-                builder.append(Integer.parseInt(getSecond().toString()));
+                builder.append(getSecond().toNonNegativeInteger(-1));
                 builder.append(',');
-                builder.append(Integer.parseInt(getThird().toString()));
+                builder.append(getThird().toNonNegativeInteger(-1));
                 builder.append("}))\\").append(index);
                 context.incExpansionGroups();
         }

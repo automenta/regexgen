@@ -70,9 +70,8 @@ public class JsonPostProcessor extends BasicPostprocessor {
     }
 
     private void saveFile(String text, String pathOfFile) {
-        Writer writer;
         try {
-            writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), "utf-8");
+            Writer writer = new OutputStreamWriter(new FileOutputStream(pathOfFile), "utf-8");
             writer.write(text);
             writer.close();
         } catch (IOException ex) {

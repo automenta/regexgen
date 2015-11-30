@@ -23,8 +23,15 @@ package it.units.inginf.male.tree;
  */
 public class RegexRange extends Leaf<String> {
 
-    public RegexRange(String value) {
-        super(value);
+//    public RegexRange(char a, char b) {
+//        super(PrimitiveTuples.pair(a, b));
+//    }
+
+    public RegexRange(String r) {
+        super(r);
+    }
+    public RegexRange(RegexRange r) {
+        super(r);
     }
 
     @Override
@@ -34,7 +41,7 @@ public class RegexRange extends Leaf<String> {
 
     @Override
     public Leaf cloneTree() {
-        RegexRange clone = new RegexRange(value);
+        RegexRange clone = new RegexRange(this); //value.getOne(), value.getTwo());
         return clone;
     }
 

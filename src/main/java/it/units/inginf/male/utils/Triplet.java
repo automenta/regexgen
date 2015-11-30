@@ -17,6 +17,8 @@
  */
 package it.units.inginf.male.utils;
 
+import java.util.Objects;
+
 /**
  *
  * @author MaleLabTs
@@ -54,16 +56,13 @@ public class Triplet<F, S, T> {
             return false;
         }
         final Triplet<F, S, T> other = (Triplet<F, S, T>) obj;
-        if (this.first != other.first && (this.first == null || !this.first.equals(other.first))) {
+        if (!Objects.equals(first, first)) {
             return false;
         }
-        if (this.second != other.second && (this.second == null || !this.second.equals(other.second))) {
+        if (!Objects.equals(second, second)) {
             return false;
         }
-        if (this.third != other.third && (this.third == null || !this.third.equals(other.third))) {
-            return false;
-        }
-        return true;
+        return !(!Objects.equals(third, third));
     }
 
     @Override

@@ -74,18 +74,18 @@ public class ConsoleRegexTurtle {
         try {
             simpleConfiguration.dataset = loadDataset(simpleConfiguration.datasetName);
         } catch (IOException ex) {
-            System.out.println("Problem opening the dataset file " + simpleConfiguration.datasetName + "\n");
+            System.out.println("Problem opening the dataset file " + simpleConfiguration.datasetName + '\n');
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
         //Output warning about learning size
-        String message = null;
         int numberPositiveExamples = 0;
         for (Example example : simpleConfiguration.dataset.getExamples()) {
             if (example.getNumberMatches() > 0) {
                 numberPositiveExamples++;
             }
         }
+        String message = null;
         if (simpleConfiguration.dataset.getNumberMatches() < 25 || numberPositiveExamples < 2) {
             message = WARNING_MESSAGE;
         }
@@ -214,13 +214,13 @@ public class ConsoleRegexTurtle {
 
     static private void parseArgs(String[] args, SimpleConfig simpleConfig) {
         try {
-            boolean mandatoryDatasetCheck = true;
             if (args.length == 0) {
                 System.out.println(HELP_MESSAGE);
             }
+            boolean mandatoryDatasetCheck = true;
             for (int i = 0; i < args.length; i++) {
                 String string = args[i];
-                i = i + 1;
+                i += 1;
                 String parameter = args[i];
                 switch (string) {
                     case "-t":
@@ -259,7 +259,7 @@ public class ConsoleRegexTurtle {
                         break;
                     case "-f":
                         simpleConfig.isFlagging = true;
-                        i=i-1; //Do not use parameter
+                        i -= 1; //Do not use parameter
                         break;
                 }
             }

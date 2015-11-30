@@ -234,13 +234,13 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < done; i++) {
-            builder.append("=");
+            builder.append('=');
         }
 
         if (done < 20) {
-            builder.append(">");
+            builder.append('>');
             for (int i = 19; i > done; i--) {
-                builder.append(" ");
+                builder.append(' ');
             }
         }
 
@@ -266,13 +266,13 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
     private String printArray(double[] fitness) {
         StringBuilder sb = new StringBuilder();
-        sb.append("[");
+        sb.append('[');
         sb.append(Math.round(fitness[0] * 100) / 100f);
         for (int i = 1; i < fitness.length; i++) {
-            sb.append(",");
+            sb.append(',');
             sb.append(Math.round(fitness[i] * 100) / 100f);
         }
-        sb.append("]");
+        sb.append(']');
         return sb.toString();
     }
 

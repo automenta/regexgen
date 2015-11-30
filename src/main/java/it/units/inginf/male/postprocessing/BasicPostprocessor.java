@@ -126,7 +126,7 @@ public class BasicPostprocessor implements Postprocessor {
 
     
     //errors per example, on learning; 
-    private List<BasicStats> getEvaluationStats(List<List<DataSet.Bounds>> evaluation, Configuration config) throws TreeEvaluationException{
+    private List<BasicStats> getEvaluationStats(List<List<DataSet.Bounds>> evaluation, Configuration config) {
         DataSet dataset = config.getDatasetContainer().getLearningDataset();
         List<BasicStats> statsPerExample = new LinkedList<>();
         for (int index = 0; index < dataset.getExamples().size(); index++) {

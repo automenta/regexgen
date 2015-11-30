@@ -28,6 +28,7 @@ import it.units.inginf.male.tree.operator.Concatenator;
 import it.units.inginf.male.tree.operator.ListMatch;
 import it.units.inginf.male.tree.operator.MatchOneOrMore;
 import it.units.inginf.male.utils.Utils;
+
 import java.util.*;
 
 /**
@@ -114,8 +115,9 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         String d = this.useWordClasses ? "\\d" : ".";
         Node letters;
         if(useWordClasses){
-            letters = new ListMatch();
-            letters.children().add(new RegexRange("A-Za-z"));
+            ListMatch l = new ListMatch();
+            l.add(new RegexRange("A-Za-z"));
+            letters = l;
         } else {
             letters = new Constant(".");
         }
@@ -138,18 +140,16 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         // /w/w/w is converted to /w++
         if(compact){
             Deque<Node> newNodes = new LinkedList<>();
-            String nodeValue;
-            String nextValue;
             //do compact
             
             while (nodes.size()>0) {
                 Node node = nodes.pollFirst();
-                nodeValue = node.toString();
+                String nodeValue = node.toString();
                 boolean isRepeat = false;
                 while (nodes.size()>0){
                     Node next = nodes.peek();
-                    nextValue = next.toString();
-                     
+                    String nextValue = next.toString();
+
                     if(nodeValue.equals(nextValue)){
                         isRepeat = true;
                         //Consume and drop the repetition
@@ -160,8 +160,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
                     } 
                 }    
                 if(isRepeat){
-                    Node finalNode = new MatchOneOrMore();
-                    finalNode.children().add(node);
+                    Node finalNode = new MatchOneOrMore(node);
                     node = finalNode;
                 }
                 newNodes.add(node);                

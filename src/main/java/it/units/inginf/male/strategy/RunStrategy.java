@@ -28,7 +28,7 @@ import java.util.concurrent.Callable;
  */
 public interface RunStrategy extends Callable<Void>{
 
-    void setup(Configuration configuration, ExecutionListener executionListener) throws TreeEvaluationException;
+    void setup(Configuration configuration, ExecutionListener executionListener);
     Configuration getConfiguration();
     ExecutionListener getExecutionListener();
     Context getContext();

@@ -21,7 +21,6 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.ParentNode;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -49,14 +48,12 @@ public abstract class TernaryOperator extends ParentNode {
     @Override
     public Node cloneTree() {
         TernaryOperator bop = buildCopy();
-        List<Node> ch = this.children();
-        if (ch.size() >= 3) {
-            List<Node> bopChilds = bop.children();
-            cloneChild(ch.get(0), bop);
-            cloneChild(ch.get(1), bop);
-            cloneChild(ch.get(2), bop);
+        if (size() >= 3) {
+            cloneChild(get(0), bop);
+            cloneChild(get(1), bop);
+            cloneChild(get(2), bop);
         }
-        bop.unhash();
+        bop.hash = hash;
         return bop;
     }
 
@@ -71,15 +68,15 @@ public abstract class TernaryOperator extends ParentNode {
     }
     
     public final Node getFirst() {
-        return children().get(0);
+        return get(0);
     }
 
     public final Node getSecond() {
-        return children().get(1);
+        return get(1);
     } 
     
     public final Node getThird() {
-        return children().get(2);
+        return get(2);
     }
     
     protected abstract  TernaryOperator buildCopy();

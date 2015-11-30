@@ -59,7 +59,5 @@ public class BasicExecutionStatus {
             this.best = candidate;
         }
 
-        
-    
     }
 }

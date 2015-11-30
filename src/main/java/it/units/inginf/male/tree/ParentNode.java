@@ -1,15 +1,16 @@
 package it.units.inginf.male.tree;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * Created by me on 11/29/15.
  */
 abstract public class ParentNode extends AbstractNode {
 
-    private final List<Node> children;
+    protected final List<Node> children;
     private ParentNode parent;
 
 //        public ParentNode() {
@@ -23,10 +24,29 @@ abstract public class ParentNode extends AbstractNode {
         children = ch;
     }
 
-    public final void add(Node... n) {
-        Collections.addAll(children, n);
-        unhash();
+    public final void forEach(Consumer<Node> eachChild) {
+        children.forEach(eachChild);
     }
+
+    public final void add(Node... n) {
+        if (n.length > 0) {
+            Collections.addAll(children, n);
+            unhash();
+        }
+    }
+
+    public final int size() { return children.size(); }
+
+    public final boolean isEmpty() {
+        return children.isEmpty();
+    }
+
+
+
+    public final Node get(int i) {
+        return children.get(i);
+    }
+
 
     public final void add(Node n) {
         children.add(n);
@@ -51,10 +71,15 @@ abstract public class ParentNode extends AbstractNode {
     }
 
     protected int rehash() {
-        int h = Objects.hash(children);
+        int h = children.hashCode();
         h = 31 * h + getClass().hashCode();
         if (h == 0) h = 1;
         return h;
+    }
+
+    public void addAll(Collection<Node> i) {
+        children.addAll(i);
+        unhash();
     }
 
     @Override
@@ -77,9 +102,9 @@ abstract public class ParentNode extends AbstractNode {
     public final boolean equals(Object o) {
         if (this == o) return true;
         if (getClass() != o.getClass()) return false;
-        it.units.inginf.male.tree.ParentNode an = (it.units.inginf.male.tree.ParentNode) o;
+        ParentNode an = (ParentNode) o;
         if (hashCode() != an.hashCode()) return false;
-        return children().equals(an.children());
+        return children.equals(an.children);
     }
 
     protected static void cloneChild(Node child, ParentNode parent) {
@@ -87,5 +112,6 @@ abstract public class ParentNode extends AbstractNode {
         newChild.setParent(parent);
         parent.add(newChild);
     }
+
 
 }

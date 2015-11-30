@@ -17,6 +17,8 @@
  */
 package it.units.inginf.male.terminalsets;
 
+import com.gs.collections.impl.set.mutable.UnifiedSet;
+import com.gs.collections.impl.set.mutable.primitive.CharHashSet;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.inputs.Context;
 import it.units.inginf.male.inputs.DataSet;
@@ -27,13 +29,8 @@ import it.units.inginf.male.tree.NodeFactory;
 import it.units.inginf.male.utils.BasicTokenizer;
 import it.units.inginf.male.utils.Tokenizer;
 import it.units.inginf.male.utils.Utils;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+
+import java.util.*;
 
 /**
  * Initialize terminal set from examples (tokens, ranges) and add significant tokens to the terminal set.
@@ -81,11 +78,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
      * @param trainingDataset
      */
     public void setup(Configuration configuration, DataSet trainingDataset) {
-        
-        Double TOKEN_THREASHOLD = 80.0; 
-        Double TOKEN_UNMATCH_THREASHOLD = 80.0;
-        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
-        
+
         //Change to striped dataset when striped version is initialized
         //IMPORTANT in case of striped dataset, the striped version is always used. This is coherent with the 
         //population builder behavior
@@ -94,6 +87,9 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
+        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
+        Double TOKEN_UNMATCH_THREASHOLD = 80.0;
+        Double TOKEN_THREASHOLD = 80.0;
         if(parameters!=null){
             //add parameters if needed
             if(parameters.containsKey("tokenThreashold")){
@@ -108,23 +104,21 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         //This is used later for Ranges computation and to define the used character set
-        SortedSet<Character> charset = new TreeSet<>();
-        
+        CharHashSet charset = new CharHashSet();
+
         
         NodeFactory nodeFactory = configuration.getNodeFactory();
         
         
-        Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
-        
-        
+        Set<Leaf> terminalSet = new UnifiedSet(nodeFactory.getTerminalSet());
                 
         for (Example example : trainingDataset.getExamples()) {
             for (String match : example.getMatchedStrings()) {
-                
+
                 //Create the used charset set.
-                for(char c : match.toCharArray()){
-                    charset.add(c);
-                }
+                for (int i = 0; i < match.length(); i++)
+                    charset.add( match.charAt(i) );
+
             }
         }
        
@@ -136,7 +130,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         //adds winnertokens (match and unmatch) to the terminal set
         for (Map.Entry<String, Double> entry : winnerTokens.entrySet()) {
                 String  token = entry.getKey();
-                double v = entry.getValue();
+                //double v = entry.getValue();
                 Leaf leaf = new Constant(Utils.escape(token));
                 terminalSet.add(leaf);
 
@@ -145,7 +139,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         
         
         //Generate ranges from characters
-        terminalSet.addAll(Utils.generateRegexRanges(charset));
+        Utils.generateRegexRanges(charset, terminalSet::add);
         
         //Add classes
         terminalSet.add(new Constant("\\d"));

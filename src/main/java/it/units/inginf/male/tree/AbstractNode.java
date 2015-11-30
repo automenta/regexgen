@@ -26,7 +26,7 @@ public abstract class AbstractNode extends Node {
 
     private final long id;
 
-    transient int hash = 0;
+    protected transient int hash = 0;
 
 
     @Override

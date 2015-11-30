@@ -49,7 +49,7 @@ public class Ramped implements Generation {
     public List<Node> generate(int popSize) {
 
 
-        int popSizeGrow = (int)popSize/2;
+        int popSizeGrow = popSize /2;
         int popSizeFull = popSize-popSizeGrow;
 
         List<Node> grow = this.full.generate(popSizeGrow);

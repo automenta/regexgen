@@ -23,7 +23,6 @@ import it.units.inginf.male.tree.Node;
 import it.units.inginf.male.tree.ParentNode;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -40,6 +39,7 @@ public abstract class UnaryOperator extends ParentNode {
 
     public UnaryOperator(Node child) {
         super(Lists.mutable.of(child));
+        child.setParent(this);
     }
 
     @Override
@@ -67,17 +67,14 @@ public abstract class UnaryOperator extends ParentNode {
     public Node cloneTree() {
         UnaryOperator bop = buildCopy();
 
-        List<Node> ch = this.children();
-        if (!ch.isEmpty()) {
-            List<Node> bopChilds = bop.children();
-            cloneChild(ch.get(0), bop);
+        if (!isEmpty()) {
+            cloneChild(get(0), bop);
         }
-        bop.unhash();
+        bop.hash = hash;
         return bop;
     }
 
 
-   
-    protected abstract UnaryOperator buildCopy();  
+    protected abstract UnaryOperator buildCopy();
 
 }

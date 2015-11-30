@@ -73,16 +73,16 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
 
         for (int i = 0; i < evaluate.size(); i++) {
             List<Bounds> result = evaluate.get(i);
-            BasicStats stats = new BasicStats();
-            
+
             Example example = dataSetView.getExample(i);
             
-            if (this.isUnannotated(example)){
+            if (isUnannotated(example)){
                 continue;
             }
             
             // TODO check example integrity: an example can NOT have both matches and unmatches
-            
+            BasicStats stats = new BasicStats();
+
             stats.tp = isTruePositive(result, example.match) ? 1 : 0;
             stats.fp = isFalsePositive(result, example.unmatch) ? 1 : 0;
             stats.fn = isFalseNegative(result, example.match) ? 1 : 0;
@@ -99,7 +99,8 @@ public class FlaggingAccuracyPrecisionLengthObjective implements Objective {
     }
 
     public static boolean isUnannotated(Example ex){
-        return ex.match.isEmpty() && ex.unmatch.isEmpty();
+        List<Bounds> mm = ex.match;
+        return mm.isEmpty() && ex.unmatch.isEmpty();
     }
      
     public static boolean isTruePositive(List<Bounds> individualMatches, List<Bounds> expectedMatches){

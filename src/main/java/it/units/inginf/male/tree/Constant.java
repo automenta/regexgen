@@ -39,6 +39,11 @@ public class Constant extends Leaf<String> {
         escaped = value.startsWith("\\");
     }
 
+    public Constant(Constant constant) {
+        super(constant);
+        charClass = constant.charClass;
+        escaped = constant.escaped;
+    }
 
 
     @Override
@@ -48,7 +53,7 @@ public class Constant extends Leaf<String> {
 
     @Override
     public Leaf cloneTree() {
-        Constant clone = new Constant(value);
+        Constant clone = new Constant(this);
         return clone;
     }
 

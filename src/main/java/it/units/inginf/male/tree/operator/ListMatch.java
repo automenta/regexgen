@@ -43,7 +43,7 @@ public class ListMatch extends UnaryOperator {
 
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
-        Node child = children().get(0);
+        Node child = get(0);
         builder.append('[');
         child.describe(builder, context, flavour);
         builder.append(']');
@@ -51,10 +51,10 @@ public class ListMatch extends UnaryOperator {
     
     @Override
     public boolean isValid() {
-        return checkValid(children().get(0));
+        return checkValid(get(0));
     }
 
-    private boolean checkValid(Node root){
+    private static boolean checkValid(Node root){
 
         if(!(root instanceof Constant || root instanceof RegexRange || root instanceof Concatenator)){
             return false;

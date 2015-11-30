@@ -17,6 +17,7 @@
  */
 package it.units.inginf.male.strategy.impl;
 
+import com.gs.collections.api.tuple.Twin;
 import it.units.inginf.male.configuration.Configuration;
 import it.units.inginf.male.configuration.EvolutionParameters;
 import it.units.inginf.male.evaluators.TreeEvaluationException;
@@ -31,7 +32,6 @@ import it.units.inginf.male.selections.Tournament;
 import it.units.inginf.male.strategy.ExecutionListener;
 import it.units.inginf.male.strategy.RunStrategy;
 import it.units.inginf.male.tree.Node;
-import it.units.inginf.male.utils.Pair;
 import it.units.inginf.male.utils.Utils;
 import it.units.inginf.male.variations.Variation;
 
@@ -58,12 +58,13 @@ public class DefaultStrategy implements RunStrategy {
     protected ExecutionListener listener;
     protected boolean terminationCriteria = false; //Termination criteria enables/disables the premature termination of thread when best regex/individual doens't change for
                                                    //a speciefied amount of generations (terminationCriteriaGenerations)
-    protected int terminationCriteriaGenerations = 200;
 
+    @Deprecated protected int terminationCriteriaGenerations = 200;
+    @Deprecated protected int maxCrossoverTries = 20;
     
     
     @Override
-    public void setup(Configuration configuration, ExecutionListener listener) throws TreeEvaluationException {
+    public void setup(Configuration configuration, ExecutionListener listener) {
         this.param = configuration.getEvolutionParameters();
         
         this.readParameters(configuration);
@@ -95,7 +96,6 @@ public class DefaultStrategy implements RunStrategy {
     @Override
     public Void call() throws TreeEvaluationException {
         try {
-            int generation;
             listener.evolutionStarted(this);
 
             Context ctx = this.context;
@@ -121,7 +121,7 @@ public class DefaultStrategy implements RunStrategy {
             int terminationCriteriaGenerationsCounter = 0;
             int doneGenerations = 0;
 
-            for (generation = 0; generation < param.getGenerations(); generation++) {
+            for (int generation = 0; generation < param.getGenerations(); generation++) {
                 ctx.setStripedPhase(ctx.getDataSetContainer().isDataSetStriped() && ((generation % ctx.getDataSetContainer().getProposedNormalDatasetInterval()) != 0));
 
                 evolve();
@@ -201,10 +201,10 @@ public class DefaultStrategy implements RunStrategy {
                 Node selectedA = selection.select(rankings);
                 Node selectedB = selection.select(rankings);
 
-                Pair<Node, Node> newIndividuals = variation.crossover(selectedA, selectedB);
+                Twin<Node> newIndividuals = variation.crossover(selectedA, selectedB, maxCrossoverTries);
                 if (newIndividuals != null) {
-                    newPopulation.add(newIndividuals.getFirst());
-                    newPopulation.add(newIndividuals.getSecond());
+                    newPopulation.add(newIndividuals.getOne());
+                    newPopulation.add(newIndividuals.getTwo());
                 }
             } else if (random <= param.getCrossoverProbability() + param.getMutationPobability()) {
                 Node mutant = selection.select(this.rankings);
@@ -268,8 +268,8 @@ public class DefaultStrategy implements RunStrategy {
         @Override public int compare(Ranking o1, Ranking o2) {
             if (o1 == o2) return 0;
 
-            Double fitness1 = o1.getFitness()[0];
-            Double fitness2 = o2.getFitness()[0];
+            double fitness1 = o1.getFitness()[0];
+            double fitness2 = o2.getFitness()[0];
             int result = Double.compare(fitness1, fitness2);
 
 //            if (result == 0) {

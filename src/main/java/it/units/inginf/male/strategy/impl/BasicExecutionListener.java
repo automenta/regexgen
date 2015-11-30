@@ -198,9 +198,8 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
     }
 
     private void callPostProcessor(){
-        long elaborationTime;
         if (configuration.getPostProcessor() != null) {
-            elaborationTime = System.currentTimeMillis() - startTime;
+            long elaborationTime = System.currentTimeMillis() - startTime;
             configuration.getPostProcessor().elaborate(configuration, results, elaborationTime);
         }
         this.status.isSearchRunning = false;

@@ -70,13 +70,8 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     }
     
     private List<Node> setup(Context context, Configuration configuration, DataSet usedTrainingDataset) {
-        
-        
-        Double TOKEN_THREASHOLD = 80.0; 
-        Double TOKEN_UNMATCH_THREASHOLD = 80.0;   
-        boolean ADD_NO_CONTEXT_INDIVIDUALS = true;
-        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
-        
+
+
         //Change to striped dataset when striped version is initialized
         //IMPORTANT in case of striped dataset, the striped version is always used. This is coherent with the 
         //population builder behavior
@@ -85,6 +80,10 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         }
         
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
+        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
+        boolean ADD_NO_CONTEXT_INDIVIDUALS = true;
+        Double TOKEN_UNMATCH_THREASHOLD = 80.0;
+        Double TOKEN_THREASHOLD = 80.0;
         if(parameters!=null){
             //add parameters if needed
             if(parameters.containsKey("tokenThreashold")){
@@ -171,16 +170,18 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     private Node createIndividualFromStrings(String preUnmatchString, String matchString, String postUnmatchString, boolean compact, 
                                                                     Map<String,Double> winnerMatchTokens, Map<String,Double> winnerUnmatchTokens) {
         
-        Node preUnmatchNode = null, matchNode = null, postUnmatchNode = null;
-        
+        Node preUnmatchNode = null;
+
         if(preUnmatchString != null){
             List<String> preUnmatchStringTokens = tokenizer.tokenize(preUnmatchString);
             preUnmatchNode = createIndividualFromTokenizedString(preUnmatchStringTokens, winnerUnmatchTokens, compact, true);
         }
+        Node matchNode = null;
         if(matchString != null){
             List<String> matchStringTokens = tokenizer.tokenize(matchString);
             matchNode = createIndividualFromTokenizedString(matchStringTokens, winnerMatchTokens, compact, false);
         }
+        Node postUnmatchNode = null;
         if(postUnmatchString != null){
             List<String> postUnmatchStringTokens = tokenizer.tokenize(postUnmatchString);        //winner tokens are added with no modifications(only escaped), other parts are converted to classes or escaped
             postUnmatchNode = createIndividualFromTokenizedString(postUnmatchStringTokens, winnerUnmatchTokens, compact, false);
@@ -239,19 +240,17 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         // /w/w/w is converted to /w++
         if(compact){
             Deque<Node> newNodes = new LinkedList<>();
-            String nodeValue;
-            String nextValue;
             //do compact
             
             while (nodes.size()>0) {
                 Node node = nodes.pollFirst();
-                nodeValue = node.toString();
+                String nodeValue = node.toString();
                 boolean isRepeat = false;
                 int repetitions = 1;
                 while (!nodes.isEmpty()){
                     Node next = nodes.peek();
-                    nextValue = next.toString();
-                     
+                    String nextValue = next.toString();
+
                     if(nodeValue.equals(nextValue)){
                         repetitions++;
                         isRepeat = true;

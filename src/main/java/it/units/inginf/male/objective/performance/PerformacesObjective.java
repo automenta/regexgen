@@ -100,7 +100,7 @@ public class PerformacesObjective implements Objective {
 
             //Flagging
             
-            if (!this.isUnannotated(example)){
+            if (!isUnannotated(example)){
                 statsFlagging.tp = isTruePositive(result, example.match) ? 1 : 0;
                 statsFlagging.fp = isFalsePositive(result, example.unmatch) ? 1 : 0;
                 statsFlagging.fn = isFalseNegative(result, example.match) ? 1 : 0;
@@ -141,20 +141,28 @@ public class PerformacesObjective implements Objective {
     }
 
     //Returns number of chars of this extracted ranges which falls into expected ranges
-    private int intersection(List<Bounds> extractedRanges, List<Bounds> expectedRanges) {
+    private static int intersection(List<Bounds> extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
 
         for (Bounds extractedBounds : extractedRanges) {
+
+            int extractedEnd = extractedBounds.end;
+            int extractedStart = extractedBounds.start;
+
             for (Bounds expectedBounds : expectedRanges) {
-                int numChars = Math.min(extractedBounds.end, expectedBounds.end) - Math.max(extractedBounds.start, expectedBounds.start);
+
+                int numChars = Math.min(extractedEnd, expectedBounds.end) -
+                        Math.max(extractedStart, expectedBounds.start);
+
                 overallNumChars += Math.max(0, numChars);
+
             }
         }
         return overallNumChars;
     }
 
     //Rerurns the number of idential intervals in two list of ranges
-    private int countIdenticalRanges(List<Bounds> rangesA, List<Bounds> rangesB) {
+    private static int countIdenticalRanges(List<Bounds> rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
 
         for (Bounds boundsA : rangesA) {
