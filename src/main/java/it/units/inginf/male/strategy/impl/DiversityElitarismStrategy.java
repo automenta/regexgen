@@ -120,21 +120,28 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         UnifiedSet<Ranking> remaining = new UnifiedSet(newPopulation.size());
         eachRankings(newPopulation, objective, remaining::add);
 
-        //while (!remaining.isEmpty()) {
-        int nextPopSize = (int)Math.ceil(remaining.size() * 0.75);
+        int maxPopulation = param.getPopulationSize();
+        int nextPopSize =
+                Math.min( maxPopulation, (int)Math.ceil(remaining.size() * 0.7));
+
+
         while (Utils.getFirstParetoFront(remaining, nextPopSize));
-            //sortByFirst(rankings);
-        //}
+
+        //System.out.println(maxPopulation + " " + nextPopSize + " -> " + remaining.size() );
 
 
-        rankings = remaining.toSortedList(RankingComparator);
-//        //rankings = new ArrayList<>(rankings.subList(0, popSize));
-//        System.out.print("after: \t" + rankings.get(0) + " ");
-//        System.out.println(rankings.get(rankings.size()-1));
+
+        List<Ranking> rr = this.rankings = remaining.toSortedList(RankingComparator);
 
         //Obtain an ordinated (as Rankings are) population
-        population.clear();
-        rankings.forEach(rr -> population.add(rr.getTree()));
+        List<Node> pp = population;
+
+        pp.clear();
+
+        int nn = Math.min(rr.size(), maxPopulation);
+        for (int i = 0; i < nn; i++) {
+            pp.add(rr.get(i).getTree());
+        }
     }   
 
      

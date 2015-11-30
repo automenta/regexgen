@@ -18,6 +18,7 @@
 package it.units.inginf.male.utils;
 
 import com.gs.collections.api.set.primitive.CharSet;
+import com.gs.collections.impl.list.mutable.FastList;
 import com.gs.collections.impl.set.mutable.primitive.CharHashSet;
 import it.units.inginf.male.inputs.DataSet;
 import it.units.inginf.male.inputs.DataSet.Bounds;
@@ -131,21 +132,21 @@ public class Utils {
     /** return if it will be necessary to call again */
     public static boolean getFirstParetoFront(Collection<Ranking> itmp, int targetSize /*, Consumer<Ranking> withWinner*/) {
 
-        int s = itmp.size();
-        final int start = s;
-        if (s <= targetSize)
+        if (itmp.size() <= targetSize)
             return false;
 
-        Iterator<Ranking> ii = itmp.iterator();
-        while (ii.hasNext()) {
+        List<Ranking> toRemove = new FastList();
 
-            Ranking r1 = ii.next();
+        Ranking[] iitmp = itmp.toArray(new Ranking[itmp.size()]);
+
+        for (Ranking r1 : iitmp) {
+
 
             boolean isDominate = false;
 
             final double[] f1 = r1.getFitness();
 
-            for (Ranking r2 : itmp) {
+            for (Ranking r2 : iitmp) {
 
                 if (r1 == r2) /* (r1.equals(r2)) */ continue;
 
@@ -157,16 +158,18 @@ public class Utils {
             }
 
             if (isDominate) {
-                ii.remove();
-
-                if (--s <= targetSize)
-                    return false;
+                toRemove.add(r1);
             }
-
         }
 
+        if (!toRemove.isEmpty()) {
+            itmp.removeAll(toRemove);
 
-        return s!=start /* = if removals occurred */;
+            if ((itmp.size()) <= targetSize)
+                return false;
+        }
+
+        return false;
     }
 
     public static String cpuInfo() throws IOException {
