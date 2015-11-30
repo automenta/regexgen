@@ -70,7 +70,7 @@ public class DataSetTest {
         Example example = new Example();
         example.setString("123456789123456789PROVA123456789123456789 123456789123456789123456789123456789PROVA123456789123456789");
         int provaIndex1 = example.getString().indexOf("PROVA");
-        int provaIndex2 = example.getString().indexOf("PROVA", provaIndex1+2);
+        int provaIndex2 = example.getString().indexOf("PROVA", provaIndex1+3);
         example.getMatch().add(new Bounds(provaIndex1,provaIndex1+"PROVA".length()));
         example.getMatch().add(new Bounds(provaIndex2,provaIndex2+"PROVA".length()));
         dataSet.getExamples().add(example);

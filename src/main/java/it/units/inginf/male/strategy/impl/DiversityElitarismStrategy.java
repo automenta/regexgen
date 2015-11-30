@@ -126,9 +126,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         int maxPopulation = param.getPopulationSize();
         int nextPopSize =
                 Math.min( remaining.size(),
-                          (int)Math.ceil(maxPopulation * 0.7));
-
-        System.out.println(rankings.size() + "> \t" + rankings.first() + " " + rankings.last());
+                          maxPopulation ); //(int)Math.ceil(maxPopulation * 0.7));
 
         do {
             MutableMap<Node, double[]> nextRemaining = Utils.getFirstParetoFront(remaining, nextPopSize);
@@ -145,8 +143,6 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
             rr.add(new Ranking(n,f));
             pp.add(n);
         });
-
-        System.out.println(rankings.size() + "< \t" + rankings.first() + " " + rankings.last());
 
     }   
 

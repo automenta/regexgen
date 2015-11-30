@@ -306,13 +306,15 @@ public class DefaultStrategy implements RunStrategy {
             double[] f2 = o2.getFitness();
             final int n = f1.length;
 
-            int balance = 0;
+            double balance = 0;
 
             for (int i = 0; i < n; i++) {
                 double v1 = f1[i];
                 double v2 = f2[i];
-                int result = Double.compare(v1, v2);
-                balance += result;
+                if (v1==v2) continue;
+
+                //int result = Double.compare(v1, v2);
+                balance += (v1/(v1+v2) - 0.5);
             }
 
             //TODO weight of fitness objectives

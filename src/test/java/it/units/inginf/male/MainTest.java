@@ -41,10 +41,10 @@ public class MainTest {
     public void test2() throws Exception {
         run(DataSetTest.getExampleDataSet2(
 
-                () -> "/*" + noise(4 + (int)(Math.random()*8)) + "*/",
+                () -> "/*" + noise(2 + (int)(Math.random()*3)) + "*/",
 
                 "acs(x111111);", "fn_c(yy3333,ab);", "d123();", "a(x,y,z);",
-                "xf(/*ab,c*/z, z1);", "gggg(b /* !;(fs)s! */);"
+                "xf(/*ab,c*/z, z1);", "gggg(b /* !;*(fs)s! */);"
 
                 //"a(dd, a123);", "b(x, yz124, v)", "b(a,a,a,a);"
                 ));
@@ -54,7 +54,7 @@ public class MainTest {
 
     private void run(DataSet d) throws Exception {
         Results r = Main.run(new SimpleConfig(
-                d, 800, 300)
+                d, 1000, 5000)
                 .buildConfiguration()
         );
 
